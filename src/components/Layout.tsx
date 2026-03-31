@@ -26,7 +26,7 @@ export default function Layout() {
         {/* Burger Menu */}
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex flex-col items-end gap-1.5 cursor-pointer z-[70] group"
+          className="flex flex-col items-end gap-1.5 cursor-pointer z-[70] group -mt-4"
           aria-label="Menu"
         >
           <div className={`h-[2px] transition-all duration-300 group-hover:bg-brand-pink ${isMenuOpen ? 'bg-brand-pink w-8 rotate-45 translate-y-2' : 'bg-black w-6'}`}></div>
