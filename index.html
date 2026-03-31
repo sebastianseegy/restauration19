@@ -4,15 +4,51 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Restauration19</title>
-    <meta name="description" content="Restaurant im Bistrostil – einfache Genussküche und besondere Weinauswahl. Helmstraße 19, Nürnberg." />
+    <meta name="description" content="Restauration19 – Bistro mit Spitzengastronomie-DNA in Nürnberg. Drei Köche aus dem Essigbrätlein kochen jetzt casual: ehrliche Genussküche, ausgewählte Weine, entspannte Atmosphäre. Helmstraße 19." />
 
     <!-- Open Graph / WhatsApp / Social Media -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="restaurant" />
     <meta property="og:url" content="https://www.restauration19.de/" />
-    <meta property="og:title" content="Restauration19" />
-    <meta property="og:description" content="Restaurant im Bistrostil – einfache Genussküche und besondere Weinauswahl. Helmstraße 19, Nürnberg." />
-    <meta property="og:image" content="https://www.restauration19.de/photos/home/home-1.jpg" />
+    <meta property="og:title" content="Restauration19 – Bistro & Weinbar Nürnberg" />
+    <meta property="og:description" content="Drei Köche aus der Spitzengastronomie kochen jetzt casual. Ehrliche Genussküche, besondere Weinauswahl, entspannte Atmosphäre. Helmstraße 19, Nürnberg." />
+    <meta property="og:image" content="https://www.restauration19.de/logo.png" />
     <meta property="og:locale" content="de_DE" />
+
+    <!-- Schema.org Structured Data für Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Restauration19",
+      "description": "Drei leidenschaftliche Köche mit Wurzeln in der Spitzengastronomie – geprägt durch Jahre im Essigbrätlein – kochen jetzt das, was sie auch zu Hause servieren würden. Einfache Genussküche zwischen Nürnberg und Rom, mit besonderer Weinauswahl in entspannter Bistro-Atmosphäre.",
+      "url": "https://www.restauration19.de",
+      "image": "https://www.restauration19.de/photos/home/home-1.jpg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Helmstraße 19",
+        "addressLocality": "Nürnberg",
+        "postalCode": "90419",
+        "addressCountry": "DE"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 49.4627,
+        "longitude": 11.0650
+      },
+      "servesCuisine": ["Deutsch", "Italienisch", "Bistroküche", "Weinbar"],
+      "priceRange": "€€€",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "17:00",
+          "closes": "22:00"
+        }
+      ],
+      "hasMap": "https://maps.google.com/?q=Helmstraße+19,+90419+Nürnberg",
+      "sameAs": ["https://instagram.com/restauration19_nbg"]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
