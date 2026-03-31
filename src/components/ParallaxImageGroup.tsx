@@ -17,7 +17,7 @@ export function ParallaxImageGroup({ images }: { images: ImageProps[] }) {
   const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
   return (
-    <div ref={ref} className="flex flex-col md:flex-row justify-center items-center gap-12 w-full max-w-6xl">
+    <div ref={ref} className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-12 w-full max-w-6xl">
       {images.map((img, idx) => {
         return (
           <motion.div 

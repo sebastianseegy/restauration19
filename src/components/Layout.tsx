@@ -62,13 +62,13 @@ export default function Layout() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-grow pt-36 pb-32 md:pb-48 px-6 max-w-7xl mx-auto w-full">
+      <main className="flex-grow pt-24 md:pt-36 pb-16 md:pb-48 px-4 md:px-6 max-w-7xl mx-auto w-full">
         <Outlet />
       </main>
 
       {/* Footer */}
-      <footer className="bg-brand-green text-white py-12 px-6 lg:px-12 w-full mt-auto">
-        <div className="max-w-7xl mx-auto flex flex-col gap-12">
+      <footer className="bg-brand-green text-white py-8 md:py-12 px-4 md:px-6 lg:px-12 w-full mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-col gap-8 md:gap-12">
           {/* Address/Contact (Top) */}
           <div className="flex flex-col items-start text-left gap-1 text-xs tracking-widest">
             <p>RESTAURATION19</p>
