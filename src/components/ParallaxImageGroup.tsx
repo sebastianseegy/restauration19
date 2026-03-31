@@ -17,13 +17,13 @@ export function ParallaxImageGroup({ images }: { images: ImageProps[] }) {
   const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
   return (
-    <div ref={ref} className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-12 w-full max-w-6xl">
+    <div ref={ref} className="flex flex-row flex-wrap justify-center items-start gap-3 md:gap-12 w-full max-w-6xl">
       {images.map((img, idx) => {
         return (
           <motion.div 
             key={idx}
             style={{ y }}
-            className="w-full flex-1 max-w-md"
+            className="w-[47%] md:w-auto md:flex-1 md:max-w-md"
           >
             <div className="relative w-full aspect-[3/4] shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
               <img 

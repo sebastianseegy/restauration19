@@ -49,9 +49,9 @@ export default function Layout() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="fixed top-24 right-6 bg-white shadow-xl border border-gray-100 p-8 z-[60] flex flex-col"
+              className="fixed top-16 md:top-24 right-4 md:right-6 bg-white shadow-xl border border-gray-100 p-4 md:p-8 z-[60] flex flex-col"
             >
-              <nav className="flex flex-col gap-6 text-lg tracking-[0.2em] text-right">
+              <nav className="flex flex-col gap-4 md:gap-6 text-base md:text-lg tracking-[0.2em] text-right">
                 <Link to="/genuss" onClick={() => setIsMenuOpen(false)} className="hover:text-brand-pink transition-colors">Genuss</Link>
                 <Link to="/events" onClick={() => setIsMenuOpen(false)} className="hover:text-brand-pink transition-colors">Events</Link>
                 <Link to="/team" onClick={() => setIsMenuOpen(false)} className="hover:text-brand-pink transition-colors">Team</Link>
@@ -62,7 +62,7 @@ export default function Layout() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-grow pt-24 md:pt-36 pb-16 md:pb-48 px-4 md:px-6 max-w-7xl mx-auto w-full">
+      <main className="flex-grow pt-32 md:pt-36 pb-16 md:pb-48 px-4 md:px-6 max-w-7xl mx-auto w-full">
         <Outlet />
       </main>
 
