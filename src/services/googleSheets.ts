@@ -61,11 +61,7 @@ export async function fetchMenuData(): Promise<MenuItem[]> {
           }
           return true;
         });
-        if (validData.length > 0) {
-          resolve(validData);
-        } else {
-          resolve(fallbackMenu);
-        }
+        resolve(validData);
       },
       error: (error) => {
         console.error("Fehler beim Laden der Google Tabelle:", error);

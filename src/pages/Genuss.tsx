@@ -38,22 +38,26 @@ export default function Genuss() {
         
         {/* Große Darstellung der Menükarte mit leichtem Schattenrahmen in grün */}
         <div className="w-full max-w-3xl bg-white p-8 md:p-16 shadow-[0_8px_40px_rgb(94,116,97,0.25)] border border-brand-green/10">
-          <div className="flex flex-col gap-12 text-sm md:text-base">
-            {speisenKategorien.map((kategorie) => (
-              <div key={kategorie}>
-                <h3 className="text-xl mb-6 text-brand-green uppercase">{kategorie}</h3>
-                {speisen.filter(s => s.Kategorie === kategorie).map((item, index) => (
-                  <div key={index} className="flex justify-between border-b border-gray-200 py-4 gap-4">
-                    <div className="flex flex-col items-start text-left flex-1">
-                      <span className="uppercase">{item.Titel}</span>
-                      {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
+          {speisen.length === 0 ? (
+            <p className="text-sm text-gray-400 tracking-widest text-center">AKTUELLE KARTE FOLGT IN KÜRZE</p>
+          ) : (
+            <div className="flex flex-col gap-12 text-sm md:text-base">
+              {speisenKategorien.map((kategorie) => (
+                <div key={kategorie}>
+                  <h3 className="text-xl mb-6 text-brand-green uppercase">{kategorie}</h3>
+                  {speisen.filter(s => s.Kategorie === kategorie).map((item, index) => (
+                    <div key={index} className="flex justify-between border-b border-gray-200 py-4 gap-4">
+                      <div className="flex flex-col items-start text-left flex-1">
+                        <span className="uppercase">{item.Titel}</span>
+                        {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
+                      </div>
+                      <span className="whitespace-nowrap">{item.Preis}</span>
                     </div>
-                    <span className="whitespace-nowrap">{item.Preis}</span>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -62,25 +66,29 @@ export default function Genuss() {
         
         {/* Große Darstellung der Weinkarte mit leichtem Schattenrahmen in grün */}
         <div className="w-full max-w-3xl bg-white p-8 md:p-16 shadow-[0_8px_40px_rgb(94,116,97,0.25)] border border-brand-green/10">
-          <div className="flex flex-col gap-12 text-sm md:text-base">
-            {weinKategorien.map((kategorie) => (
-              <div key={kategorie}>
-                <h3 className="text-xl mb-6 text-brand-green uppercase">{kategorie}</h3>
-                {weine.filter(w => w.Kategorie === kategorie).map((item, index) => (
-                  <div key={index} className="flex justify-between border-b border-gray-200 py-4 gap-4">
-                    <div className="flex flex-col items-start text-left flex-1">
-                      <span className="uppercase">{item.Titel}</span>
-                      {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
+          {weine.length === 0 ? (
+            <p className="text-sm text-gray-400 tracking-widest text-center">AKTUELLE WEINAUSWAHL FOLGT IN KÜRZE</p>
+          ) : (
+            <div className="flex flex-col gap-12 text-sm md:text-base">
+              {weinKategorien.map((kategorie) => (
+                <div key={kategorie}>
+                  <h3 className="text-xl mb-6 text-brand-green uppercase">{kategorie}</h3>
+                  {weine.filter(w => w.Kategorie === kategorie).map((item, index) => (
+                    <div key={index} className="flex justify-between border-b border-gray-200 py-4 gap-4">
+                      <div className="flex flex-col items-start text-left flex-1">
+                        <span className="uppercase">{item.Titel}</span>
+                        {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
+                      </div>
+                      <div className="flex flex-col items-end whitespace-nowrap">
+                        <span>{item.Preis}</span>
+                        {item.Preis_Flasche && <span className="text-xs text-gray-500 mt-1 uppercase">{item.Preis_Flasche}</span>}
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end whitespace-nowrap">
-                      <span>{item.Preis}</span>
-                      {item.Preis_Flasche && <span className="text-xs text-gray-500 mt-1 uppercase">{item.Preis_Flasche}</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
