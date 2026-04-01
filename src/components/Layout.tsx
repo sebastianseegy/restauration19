@@ -29,9 +29,9 @@ export default function Layout() {
           className="flex flex-col items-end gap-1.5 cursor-pointer z-[70] group -mt-4"
           aria-label="Menu"
         >
-          <div className={`h-[2px] transition-all duration-300 group-hover:bg-brand-pink ${isMenuOpen ? 'bg-brand-pink w-8 rotate-45 translate-y-2' : 'bg-black w-6'}`}></div>
-          <div className={`h-[2px] transition-all duration-300 group-hover:bg-brand-pink ${isMenuOpen ? 'bg-brand-pink w-4 opacity-0' : 'bg-black w-4'}`}></div>
-          <div className={`h-[2px] transition-all duration-300 group-hover:bg-brand-pink ${isMenuOpen ? 'bg-brand-pink w-8 -rotate-45 -translate-y-2' : 'bg-black w-8'}`}></div>
+          <div className={`h-px md:h-[2px] transition-all duration-300 group-hover:bg-brand-pink ${isMenuOpen ? 'bg-brand-pink w-6 md:w-8 rotate-45 translate-y-[5px] md:translate-y-2' : 'bg-black w-5 md:w-6'}`}></div>
+          <div className={`h-px md:h-[2px] transition-all duration-300 group-hover:bg-brand-pink ${isMenuOpen ? 'bg-brand-pink w-3 md:w-4 opacity-0' : 'bg-black w-3 md:w-4'}`}></div>
+          <div className={`h-px md:h-[2px] transition-all duration-300 group-hover:bg-brand-pink ${isMenuOpen ? 'bg-brand-pink w-6 md:w-8 -rotate-45 -translate-y-[5px] md:-translate-y-2' : 'bg-black w-6 md:w-8'}`}></div>
         </button>
       </header>
 

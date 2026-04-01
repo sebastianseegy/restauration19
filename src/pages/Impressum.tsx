@@ -10,7 +10,7 @@ export default function Impressum() {
       </p>
       <p>
         VERTRETEN DURCH:<br/>
-        Florian Hermanns, Kristin Rützel
+        Florian Hermanns, Krispin Rützel
       </p>
       <p>
         KONTAKT:<br/>

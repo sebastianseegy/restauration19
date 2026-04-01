@@ -8,13 +8,13 @@ interface ImageProps {
 
 export function ParallaxImageGroup({ images }: { images: ImageProps[] }) {
   const ref = useRef(null);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
 
-  // Morphen/Parallax effect: move up slightly as we scroll down
-  const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
+  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [10, -10] : [50, -50]);
 
   return (
     <div ref={ref} className="flex flex-row flex-wrap justify-center items-start gap-3 md:gap-12 w-full max-w-6xl">

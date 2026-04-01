@@ -61,7 +61,7 @@ export default function Team() {
           <div className="flex flex-col items-center text-xs md:text-sm leading-relaxed gap-1 md:gap-2 text-center">
             <h3 className="text-sm md:text-xl mb-1 md:mb-2 font-medium">KRISPIN</h3>
             <p>POSITION: GENIALER KOCH MIT GROSSEM ENTHUSIASMUS</p>
-            <p>FAIBLE FÜR: WEINFLASCHENENTKORKEN UND PINK PONG</p>
+            <p>FAIBLE FÜR: WEINFLASCHENENTKORKEN UND PING PONG</p>
             <p>VERSTECKTES TALENT: TROCKENER HUMOR</p>
           </div>
         </motion.div>
