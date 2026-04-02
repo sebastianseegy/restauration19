@@ -6,7 +6,8 @@ export default function Home() {
       <div className="flex flex-col items-center w-full gap-8 md:gap-12">
         <section className="max-w-4xl mx-auto">
           <p className="text-sm md:text-xl leading-relaxed">
-            RESTAURANT IM BISTROSTIL – EINFACH(E) GENUSSKÜCHE UND BESONDERE WEINAUSWAHL
+            RESTAURATION19, EIN RESTAURANT IM BISTROSTIL - <br />
+            EINFACH(E) GENUSSKÜCHE UND BESONDERE WEINAUSWAHL
           </p>
         </section>
 
@@ -22,7 +23,7 @@ export default function Home() {
       <div className="flex flex-col items-center w-full gap-8 md:gap-12">
         <section className="max-w-4xl mx-auto">
           <p className="text-sm md:text-xl leading-relaxed">
-            WIR SIND DREI LEIDENSCHAFTLICHE KÖCHE MIT GROSSER BEGEISTERUNG FÜR GUTES, EINFACHES ESSEN. IN DER 19 GIBT ES DAS, WAS WIR AUCH ZU HAUSE GERNE SERVIEREN. WIR LIEBEN DIE EUROPÄISCHE KULINARIK – VON NÜRNBERG BIS ROM – SAISONAL, BIOLOGISCH UND AUS BESTER QUALITÄT.
+            WIR SIND DREI LEIDENSCHAFTLICHE KÖCHE MIT GROSSER BEGEISTERUNG FÜR GUTES, EINFACHES ESSEN. IN DER 19 GIBT ES DAS, WAS WIR AUCH ZU HAUSE GERNE SERVIEREN. WIR LIEBEN DIE KULINARIK ZWISCHEN NÜRNBERG UND ROM, KLEINE AUSFLÜGE IN ANDERE REGIONEN SIND ABER NICHT AUSGESCHLOSSEN.
           </p>
         </section>
 

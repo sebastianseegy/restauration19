@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../restauration19 Text"
 		}
 	],
 	"settings": {}
