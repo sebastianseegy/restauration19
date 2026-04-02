@@ -1,8 +1,41 @@
+# Dependencies & build
 node_modules/
 build/
 dist/
 coverage/
+
+# OS & editors
 .DS_Store
 *.log
+
+# Environment & secrets (keep .env.example tracked)
 .env*
 !.env.example
+.envrc
+*.local
+
+# API keys / tokens in ad-hoc files
+*.pem
+*.key
+*.p12
+*.crt
+*.secret
+secrets/
+credentials/
+
+# Firebase / GCP service accounts & local Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+*-firebase-adminsdk-*.json
+**/serviceAccountKey.json
+serviceAccount*.json
+*.credentials.json
+
+# Mobile / Google (if ever added)
+google-services.json
+GoogleService-Info.plist
+
+# Vercel / Netlify local env
+.vercel
+.netlify
