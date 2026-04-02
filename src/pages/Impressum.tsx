@@ -4,16 +4,16 @@ export default function Impressum() {
       <h1 className="text-2xl mb-8 text-center">IMPRESSUM</h1>
 
       <div className="flex flex-col gap-2">
-        <p>HERMANNS &amp; RÜTZEL GBR</p>
         <p>
-          HELMSTRASSE 19<br/>
+          HERMANNS &amp; RÜTZEL GBR<br/>
           RESTAURATION19<br/>
+          HELMSTRASSE 19<br/>
           90419 NÜRNBERG
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-brand-green">KONTAKT</p>
+        <p className="font-bold">KONTAKT</p>
         <p>
           TELEFON: 0911 25350782<br/>
           E-MAIL: <a href="mailto:info@restauration19.de" className="hover:text-brand-pink transition-colors">INFO@RESTAURATION19.DE</a>
@@ -21,45 +21,64 @@ export default function Impressum() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-brand-green">VERTRETUNGSBERECHTIGTER GESELLSCHAFTER</p>
-        <p>
-          FLORIAN HERMANNS<br/>
-          KRISPIN MARTIN RÜTZEL
-        </p>
+        <p className="font-bold">VERTRETUNGSBERECHTIGTE GESELLSCHAFTER</p>
+        <p>FLORIAN HERMANNS, KRISPIN RÜTZEL</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-brand-green">UMSATZSTEUER-IDENTIFIKATIONSNUMMER</p>
-        <p>UMSATZSTEUER-IDENTIFIKATIONSNUMMER GEMÄSS § 27A USTG: DE461020856</p>
+        <p className="font-bold">UMSATZSTEUER-IDENTIFIKATIONSNUMMER GEMÄSS §27 A UMSATZSTEUERGESETZ</p>
+        <p>DE 461 020 856</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-brand-green">ZUSTÄNDIGE AUFSICHTSBEHÖRDE</p>
+        <p className="font-bold">ZUSTÄNDIGE AUFSICHTSBEHÖRDE</p>
         <p>
           ORDNUNGSAMT NÜRNBERG<br/>
           INNERER LAUFER PLATZ 3<br/>
           90403 NÜRNBERG
         </p>
         <a href="https://www.nuernberg.de/internet/ordnungsamt/gaststaetten.html" target="_blank" rel="noopener noreferrer" className="hover:text-brand-pink transition-colors break-all">
-          WWW.NUERNBERG.DE/INTERNET/ORDNUNGSAMT/GASTSTAETTEN.HTML
+          HTTPS://WWW.NUERNBERG.DE/INTERNET/ORDNUNGSAMT/GASTSTAETTEN.HTML
         </a>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-brand-green">VERBRAUCHERSTREITBEILEGUNG</p>
-        <p>WIR SIND NICHT BEREIT UND NICHT VERPFLICHTET, AN EINEM STREITBEILEGUNGSVERFAHREN VOR EINER VERBRAUCHERSCHLICHTUNGSSTELLE TEILZUNEHMEN.</p>
+        <p className="font-bold">VERBRAUCHERSTREITBEILEGUNG/­UNIVERSALSCHLICHTUNGSSTELLE</p>
+        <p>WIR SIND NICHT BEREIT ODER VERPFLICHTET, AN STREITBEILEGUNGSVERFAHREN VOR EINER VERBRAUCHERSCHLICHTUNGSSTELLE TEILZUNEHMEN.</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-brand-green">SOCIAL MEDIA</p>
-        <a href="https://www.instagram.com/restauration19_nbg" target="_blank" rel="noopener noreferrer" className="hover:text-brand-pink transition-colors">
-          INSTAGRAM: @RESTAURATION19_NBG
-        </a>
+        <p className="font-bold">EU-STREITSCHLICHTUNG</p>
+        <p>
+          DIE EUROPÄISCHE KOMMISSION STELLT EINE PLATTFORM ZUR ONLINE-STREITBEILEGUNG (OS) BEREIT:{' '}
+          <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="hover:text-brand-pink transition-colors break-all">
+            HTTPS://EC.EUROPA.EU/CONSUMERS/ODR
+          </a>.
+        </p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-brand-green">BILDNACHWEISE</p>
+        <p className="font-bold">QUELLENANGABEN FÜR DIE VERWENDETEN BILDER</p>
         <p>QUIRIN STAUFER</p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <p className="font-bold">HAFTUNG FÜR INHALTE</p>
+        <p>ALS DIENSTEANBIETER SIND WIR GEMÄSS § 7 ABS.1 DDG FÜR EIGENE INHALTE AUF DIESEN SEITEN NACH DEN ALLGEMEINEN GESETZEN VERANTWORTLICH. NACH §§ 8 BIS 10 DDG SIND WIR ALS DIENSTEANBIETER JEDOCH NICHT VERPFLICHTET, ÜBERMITTELTE ODER GESPEICHERTE FREMDE INFORMATIONEN ZU ÜBERWACHEN ODER NACH UMSTÄNDEN ZU FORSCHEN, DIE AUF EINE RECHTSWIDRIGE TÄTIGKEIT HINWEISEN.</p>
+        <p>VERPFLICHTUNGEN ZUR ENTFERNUNG ODER SPERRUNG DER NUTZUNG VON INFORMATIONEN NACH DEN ALLGEMEINEN GESETZEN BLEIBEN HIERVON UNBERÜHRT. EINE DIESBEZÜGLICHE HAFTUNG IST JEDOCH ERST AB DEM ZEITPUNKT DER KENNTNIS EINER KONKRETEN RECHTSVERLETZUNG MÖGLICH. BEI BEKANNTWERDEN VON ENTSPRECHENDEN RECHTSVERLETZUNGEN WERDEN WIR DIESE INHALTE UMGEHEND ENTFERNEN.</p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <p className="font-bold">HAFTUNG FÜR LINKS</p>
+        <p>UNSER ANGEBOT ENTHÄLT LINKS ZU EXTERNEN WEBSITES DRITTER, AUF DEREN INHALTE WIR KEINEN EINFLUSS HABEN. DESHALB KÖNNEN WIR FÜR DIESE FREMDEN INHALTE AUCH KEINE GEWÄHR ÜBERNEHMEN. FÜR DIE INHALTE DER VERLINKTEN SEITEN IST STETS DER JEWEILIGE ANBIETER ODER BETREIBER DER SEITEN VERANTWORTLICH. DIE VERLINKTEN SEITEN WURDEN ZUM ZEITPUNKT DER VERLINKUNG AUF MÖGLICHE RECHTSVERSTÖSSE ÜBERPRÜFT. RECHTSWIDRIGE INHALTE WAREN ZUM ZEITPUNKT DER VERLINKUNG NICHT ERKENNBAR.</p>
+        <p>EINE PERMANENTE INHALTLICHE KONTROLLE DER VERLINKTEN SEITEN IST JEDOCH OHNE KONKRETE ANHALTSPUNKTE EINER RECHTSVERLETZUNG NICHT ZUMUTBAR. BEI BEKANNTWERDEN VON RECHTSVERLETZUNGEN WERDEN WIR DERARTIGE LINKS UMGEHEND ENTFERNEN.</p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <p className="font-bold">URHEBERRECHT</p>
+        <p>DIE DURCH DIE SEITENBETREIBER ERSTELLTEN INHALTE UND WERKE AUF DIESEN SEITEN UNTERLIEGEN DEM DEUTSCHEN URHEBERRECHT. DIE VERVIELFÄLTIGUNG, BEARBEITUNG, VERBREITUNG UND JEDE ART DER VERWERTUNG AUSSERHALB DER GRENZEN DES URHEBERRECHTES BEDÜRFEN DER SCHRIFTLICHEN ZUSTIMMUNG DES JEWEILIGEN AUTORS BZW. ERSTELLERS. DOWNLOADS UND KOPIEN DIESER SEITE SIND NUR FÜR DEN PRIVATEN, NICHT KOMMERZIELLEN GEBRAUCH GESTATTET.</p>
+        <p>SOWEIT DIE INHALTE AUF DIESER SEITE NICHT VOM BETREIBER ERSTELLT WURDEN, WERDEN DIE URHEBERRECHTE DRITTER BEACHTET. INSBESONDERE WERDEN INHALTE DRITTER ALS SOLCHE GEKENNZEICHNET. SOLLTEN SIE TROTZDEM AUF EINE URHEBERRECHTSVERLETZUNG AUFMERKSAM WERDEN, BITTEN WIR UM EINEN ENTSPRECHENDEN HINWEIS. BEI BEKANNTWERDEN VON RECHTSVERLETZUNGEN WERDEN WIR DERARTIGE INHALTE UMGEHEND ENTFERNEN.</p>
+        <p className="text-gray-400 text-xs mt-2">QUELLENHINWEIS: WWW.E-RECHT24.DE</p>
       </div>
     </div>
   );
