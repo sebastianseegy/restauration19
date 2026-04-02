@@ -2,8 +2,8 @@ import { ParallaxImageGroup } from '../components/ParallaxImageGroup';
 
 export default function Events() {
   const eventImages = [
-    { src: "/photos/events/events-1.jpg", alt: "Restauration19 Events" },
-    { src: "/photos/events/events-2.jpg", alt: "Restauration19 Events" }
+    { src: "/photos/events/events-1.jpg", alt: "Private Events samstags im Restauration19 Nürnberg" },
+    { src: "/photos/events/events-2.jpg", alt: "Home Cooking Event mit dem Team von Restauration19 Nürnberg" }
   ];
 
   return (
