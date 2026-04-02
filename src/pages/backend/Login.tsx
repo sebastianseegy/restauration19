@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function Login() {
@@ -11,8 +11,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   if (user) {
-    navigate('/backend/dashboard');
-    return null;
+    return <Navigate to="/backend/dashboard" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +33,7 @@ export default function Login() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
           <img src="/logo.png" alt="Restauration19" className="h-10 mx-auto mb-6 opacity-80" />
-          <h1 className="text-sm tracking-widest text-gray-500">BACKEND</h1>
+          <p className="text-sm tracking-widest text-gray-500">BACKEND</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col gap-5">

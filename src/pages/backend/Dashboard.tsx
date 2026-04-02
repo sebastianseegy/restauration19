@@ -21,7 +21,8 @@ export default function Dashboard() {
         const items = snap.docs.map(d => ({ id: d.id, ...d.data() })) as MenuItem[];
         const categories: Record<string, number> = {};
         items.forEach(item => {
-          categories[item.category] = (categories[item.category] || 0) + 1;
+          const key = `${item.Typ} – ${item.Kategorie}`;
+          categories[key] = (categories[key] || 0) + 1;
         });
         setStats({
           totalItems: items.length,

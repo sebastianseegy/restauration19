@@ -1,97 +1,167 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../firebase';
-import { MenuItem, MenuCategory, CATEGORY_LABELS, EU_ALLERGENS, AllergenId } from '../../types/menu';
+import { db } from '../../firebase';
+import {
+  MenuItem,
+  MenuTyp,
+  SPEISE_KATEGORIEN,
+  WEIN_KATEGORIEN,
+  WeinGlasMl,
+  compareMenuKategorie,
+  composeWeinFlascheString,
+  composeWeinPreisString,
+  displaySpeisePreis,
+  displayWeinFlascheLine,
+  displayWeinPreisLine,
+  parseWeinPrices,
+  stripEurAmount,
+} from '../../types/menu';
+import { getMenuMeta, type MenuMeta } from '../../services/menuMeta';
 
-const EMPTY_FORM: Omit<MenuItem, 'id' | 'createdAt' | 'updatedAt'> = {
-  name: { de: '', en: '' },
-  description: { de: '', en: '' },
-  price: 0,
-  category: 'hauptgericht',
-  allergens: [],
-  imageUrl: '',
+const EMPTY: Omit<MenuItem, 'id' | 'createdAt' | 'updatedAt'> = {
+  Typ: 'Speise',
+  Kategorie: 'KLEINIGKEITEN',
+  Titel: '',
+  Beschreibung: '',
+  Preis: '',
+  Preis_Flasche: '',
   isActive: true,
-  activeFrom: '',
-  activeUntil: '',
 };
+
+function mergeCategoryOptions(
+  typ: MenuTyp,
+  meta: MenuMeta,
+  current: string
+): string[] {
+  const defaults = typ === 'Speise' ? SPEISE_KATEGORIEN : WEIN_KATEGORIEN;
+  const custom = typ === 'Speise' ? meta.customSpeiseKategorien : meta.customWeinKategorien;
+  const set = new Set<string>([...defaults, ...custom]);
+  if (current && !set.has(current)) set.add(current);
+  return [...set].sort((a, b) => compareMenuKategorie(typ, a, b));
+}
 
 export default function MenuItemForm() {
   const { id } = useParams<{ id: string }>();
   const isNew = id === 'new';
   const navigate = useNavigate();
-  const fileRef = useRef<HTMLInputElement>(null);
 
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [lang, setLang] = useState<'de' | 'en'>('de');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
-  const [loading, setLoading] = useState(!isNew);
+  const [form, setForm] = useState(EMPTY);
+  const [menuMeta, setMenuMeta] = useState<MenuMeta>({
+    customSpeiseKategorien: [],
+    customWeinKategorien: [],
+  });
+  const [weinGlas, setWeinGlas] = useState<WeinGlasMl>('0,2');
+  const [eurGlas, setEurGlas] = useState('');
+  const [eurFlasche, setEurFlasche] = useState('');
+
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
+  const categoryOptions = useMemo(
+    () => mergeCategoryOptions(form.Typ, menuMeta, form.Kategorie),
+    [form.Typ, form.Kategorie, menuMeta]
+  );
+
+  const syncWeinFromStrings = useCallback((preis: string, flasche: string) => {
+    const p = parseWeinPrices(preis || '', flasche || '');
+    setWeinGlas(p.glas);
+    setEurGlas(p.eurGlas);
+    setEurFlasche(p.eurFlasche);
+  }, []);
+
   useEffect(() => {
-    if (!isNew && id) {
-      getDoc(doc(db, 'menuItems', id)).then(snap => {
-        if (snap.exists()) {
-          const data = snap.data() as MenuItem;
-          setForm({
-            name: data.name || { de: '', en: '' },
-            description: data.description || { de: '', en: '' },
-            price: data.price || 0,
-            category: data.category || 'hauptgericht',
-            allergens: data.allergens || [],
-            imageUrl: data.imageUrl || '',
-            isActive: data.isActive ?? true,
-            activeFrom: data.activeFrom || '',
-            activeUntil: data.activeUntil || '',
-          });
-          if (data.imageUrl) setImagePreview(data.imageUrl);
+    let cancelled = false;
+    (async () => {
+      try {
+        const meta = await getMenuMeta();
+        if (cancelled) return;
+        setMenuMeta(meta);
+
+        if (!isNew && id) {
+          const snap = await getDoc(doc(db, 'menuItems', id));
+          if (cancelled) return;
+          if (snap.exists()) {
+            const d = snap.data() as MenuItem;
+            const typ = d.Typ || 'Speise';
+            setForm({
+              Typ: typ,
+              Kategorie: d.Kategorie || '',
+              Titel: d.Titel || '',
+              Beschreibung: d.Beschreibung || '',
+              Preis: typ === 'Speise' ? stripEurAmount(d.Preis || '') : d.Preis || '',
+              Preis_Flasche: d.Preis_Flasche || '',
+              isActive: d.isActive ?? true,
+            });
+            if (typ === 'Wein') {
+              syncWeinFromStrings(d.Preis || '', d.Preis_Flasche || '');
+            }
+          }
         }
-        setLoading(false);
-      });
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, isNew, syncWeinFromStrings]);
+
+  const handleTypChange = (typ: MenuTyp) => {
+    const defaultKat = typ === 'Speise' ? SPEISE_KATEGORIEN[0] : WEIN_KATEGORIEN[0];
+    if (typ === 'Wein') {
+      setWeinGlas('0,2');
+      setEurGlas('');
+      setEurFlasche('');
+      setForm(prev => ({
+        ...prev,
+        Typ: typ,
+        Kategorie: defaultKat,
+        Preis: '',
+        Preis_Flasche: '',
+      }));
+    } else {
+      setForm(prev => ({ ...prev, Typ: typ, Kategorie: defaultKat }));
     }
-  }, [id, isNew]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
-  };
-
-  const toggleAllergen = (allergen: AllergenId) => {
-    setForm(prev => ({
-      ...prev,
-      allergens: prev.allergens.includes(allergen)
-        ? prev.allergens.filter(a => a !== allergen)
-        : [...prev.allergens, allergen],
-    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.de.trim()) { setError('Name (DE) ist erforderlich.'); return; }
+    if (!form.Titel.trim()) {
+      setError('Titel ist erforderlich.');
+      return;
+    }
+    let preis = form.Preis;
+    let preisFlasche = form.Preis_Flasche || '';
+    if (form.Typ === 'Wein') {
+      if (!eurGlas.trim() || !eurFlasche.trim()) {
+        setError('Preis Glas und Preis Flasche sind erforderlich.');
+        return;
+      }
+      preis = composeWeinPreisString(weinGlas, eurGlas);
+      preisFlasche = composeWeinFlascheString(eurFlasche);
+    } else {
+      if (!form.Preis.trim()) {
+        setError('Preis ist erforderlich.');
+        return;
+      }
+      preis = stripEurAmount(form.Preis.trim());
+    }
+
     setSaving(true);
     setError('');
     try {
-      let imageUrl = form.imageUrl;
-
-      if (imageFile) {
-        const storageRef = ref(storage, `menu/${Date.now()}_${imageFile.name}`);
-        await uploadBytes(storageRef, imageFile);
-        imageUrl = await getDownloadURL(storageRef);
-      }
-
       const now = new Date().toISOString();
       const docId = isNew ? `${Date.now()}` : id!;
       const data: MenuItem = {
         id: docId,
         ...form,
-        imageUrl,
+        Preis: preis,
+        Preis_Flasche: form.Typ === 'Wein' ? preisFlasche : '',
+        Beschreibung: form.Beschreibung || '',
         updatedAt: now,
-        createdAt: isNew ? now : form.activeFrom || now,
+        createdAt: isNew ? now : (await getDoc(doc(db, 'menuItems', docId))).data()?.createdAt || now,
       };
 
       if (isNew) {
@@ -99,7 +169,6 @@ export default function MenuItemForm() {
       } else {
         await updateDoc(doc(db, 'menuItems', docId), { ...data });
       }
-
       navigate('/backend/menu');
     } catch (err) {
       setError('Fehler beim Speichern. Bitte erneut versuchen.');
@@ -117,202 +186,210 @@ export default function MenuItemForm() {
     );
   }
 
+  const previewTitle = form.Titel.trim() || '–';
+  const showDescPreview = Boolean(form.Beschreibung?.trim());
+
+  const fieldCls =
+    'border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 bg-white';
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-3xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xs tracking-widest text-gray-400 mb-1">
-            {isNew ? 'NEUES ITEM' : 'ITEM BEARBEITEN'}
-          </h1>
-        </div>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-2xl">
+      <div className="flex items-center justify-between w-full gap-4">
         <button
           type="button"
           onClick={() => navigate('/backend/menu')}
-          className="text-xs tracking-widest text-gray-400 hover:text-gray-900 transition-colors"
+          className="text-xs tracking-widest text-gray-500 hover:text-gray-900 transition-colors shrink-0"
         >
           ← ZURÜCK
         </button>
+        <h1 className="text-xs tracking-widest text-gray-400 text-right flex-1">
+          {isNew ? 'NEUES ITEM' : 'ITEM BEARBEITEN'}
+        </h1>
       </div>
 
-      {/* Language tabs */}
-      <div className="flex gap-2">
-        {(['de', 'en'] as const).map(l => (
-          <button
-            key={l}
-            type="button"
-            onClick={() => setLang(l)}
-            className={`text-xs tracking-widest px-4 py-2 rounded-lg transition-colors ${
-              lang === l ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-400'
-            }`}
-          >
-            {l === 'de' ? 'DEUTSCH' : 'ENGLISH'}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left column */}
-        <div className="flex flex-col gap-5">
-          {/* Name */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] tracking-widest text-gray-400">
-              NAME ({lang.toUpperCase()}) *
-            </label>
-            <input
-              type="text"
-              value={form.name[lang]}
-              onChange={e => setForm(prev => ({ ...prev, name: { ...prev.name, [lang]: e.target.value } }))}
-              placeholder={lang === 'de' ? 'z.B. Burrata mit Tomaten' : 'e.g. Burrata with tomatoes'}
-              className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400"
-            />
-          </div>
-
-          {/* Description */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] tracking-widest text-gray-400">
-              BESCHREIBUNG ({lang.toUpperCase()})
-            </label>
-            <textarea
-              value={form.description[lang]}
-              onChange={e => setForm(prev => ({ ...prev, description: { ...prev.description, [lang]: e.target.value } }))}
-              rows={3}
-              placeholder={lang === 'de' ? 'Kurze Beschreibung...' : 'Short description...'}
-              className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 resize-none"
-            />
-          </div>
-
-          {/* Price */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] tracking-widest text-gray-400">PREIS (€)</label>
-            <input
-              type="number"
-              value={form.price || ''}
-              onChange={e => setForm(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
-              step="0.50"
-              min="0"
-              placeholder="0.00"
-              className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400"
-            />
-          </div>
-
-          {/* Category */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] tracking-widest text-gray-400">KATEGORIE</label>
-            <select
-              value={form.category}
-              onChange={e => setForm(prev => ({ ...prev, category: e.target.value as MenuCategory }))}
-              className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 bg-white"
-            >
-              {Object.entries(CATEGORY_LABELS).map(([val, label]) => (
-                <option key={val} value={val}>{label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Active status */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setForm(prev => ({ ...prev, isActive: !prev.isActive }))}
-              className={`relative w-10 h-5 rounded-full transition-colors ${form.isActive ? 'bg-gray-900' : 'bg-gray-200'}`}
-            >
-              <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.isActive ? 'translate-x-5' : 'translate-x-0.5'}`} />
-            </button>
-            <label className="text-xs tracking-widest text-gray-500">
-              {form.isActive ? 'AKTIV (auf der Karte)' : 'INAKTIV (nicht sichtbar)'}
-            </label>
-          </div>
-
-          {/* Date range */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] tracking-widest text-gray-400">AKTIV AB</label>
-              <input
-                type="date"
-                value={form.activeFrom}
-                onChange={e => setForm(prev => ({ ...prev, activeFrom: e.target.value }))}
-                className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] tracking-widest text-gray-400">AKTIV BIS</label>
-              <input
-                type="date"
-                value={form.activeUntil}
-                onChange={e => setForm(prev => ({ ...prev, activeUntil: e.target.value }))}
-                className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
-              />
-            </div>
+      {/* Typ */}
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-medium text-gray-700 tracking-wide">TYP</label>
+        <div className="flex justify-center w-full">
+          <div className="flex gap-2 flex-wrap justify-center">
+            {(['Speise', 'Wein'] as MenuTyp[]).map(t => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => handleTypChange(t)}
+                className={`text-xs tracking-widest px-6 py-2.5 rounded-lg transition-colors ${
+                  form.Typ === t
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-400'
+                }`}
+              >
+                {t.toUpperCase()}
+              </button>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* Right column */}
-        <div className="flex flex-col gap-5">
-          {/* Image upload */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] tracking-widest text-gray-400">BILD</label>
-            <div
-              onClick={() => fileRef.current?.click()}
-              className="border-2 border-dashed border-gray-200 rounded-xl overflow-hidden cursor-pointer hover:border-gray-400 transition-colors"
+      {/* Kategorie */}
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-medium text-gray-700 tracking-wide">KATEGORIE</label>
+        <select
+          value={form.Kategorie}
+          onChange={e => setForm(prev => ({ ...prev, Kategorie: e.target.value }))}
+          className={fieldCls}
+        >
+          {categoryOptions.map(k => (
+            <option key={k} value={k}>
+              {k}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Titel */}
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-medium text-gray-700 tracking-wide">TITEL *</label>
+        <input
+          type="text"
+          value={form.Titel}
+          onChange={e => setForm(prev => ({ ...prev, Titel: e.target.value.toUpperCase() }))}
+          className={fieldCls}
+        />
+      </div>
+
+      {/* Beschreibung */}
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-medium text-gray-700 tracking-wide">
+          BESCHREIBUNG {form.Typ === 'Wein' ? '(Weingut, Herkunft)' : '(Optional)'}
+        </label>
+        <input
+          type="text"
+          value={form.Beschreibung}
+          onChange={e => setForm(prev => ({ ...prev, Beschreibung: e.target.value.toUpperCase() }))}
+          className={fieldCls}
+        />
+      </div>
+
+      {/* Preis Speise */}
+      {form.Typ === 'Speise' && (
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-medium text-gray-700 tracking-wide">PREIS *</label>
+          <input
+            type="text"
+            value={form.Preis}
+            onChange={e => setForm(prev => ({ ...prev, Preis: e.target.value }))}
+            className={fieldCls}
+          />
+        </div>
+      )}
+
+      {/* Preis Wein */}
+      {form.Typ === 'Wein' && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-medium text-gray-700 tracking-wide">GLAS (l)</label>
+            <select
+              value={weinGlas}
+              onChange={e => setWeinGlas(e.target.value as WeinGlasMl)}
+              className={fieldCls}
             >
-              {imagePreview ? (
-                <img src={imagePreview} alt="" className="w-full h-48 object-cover" />
-              ) : (
-                <div className="h-48 flex flex-col items-center justify-center text-gray-300 gap-2">
-                  <span className="text-3xl">+</span>
-                  <span className="text-xs tracking-widest">BILD HOCHLADEN</span>
-                </div>
-              )}
-            </div>
+              <option value="0,1">0,1 l</option>
+              <option value="0,2">0,2 l</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-medium text-gray-700 tracking-wide">PREIS GLAS *</label>
             <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
+              type="text"
+              value={eurGlas}
+              onChange={e => setEurGlas(e.target.value)}
+              className={fieldCls}
             />
-            {imagePreview && (
-              <button
-                type="button"
-                onClick={() => { setImageFile(null); setImagePreview(''); setForm(prev => ({ ...prev, imageUrl: '' })); }}
-                className="text-xs text-red-300 hover:text-red-500 transition-colors text-left"
-              >
-                Bild entfernen
-              </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-medium text-gray-700 tracking-wide">PREIS FLASCHE *</label>
+            <input
+              type="text"
+              value={eurFlasche}
+              onChange={e => setEurFlasche(e.target.value)}
+              className={fieldCls}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Active toggle: Inaktiv | switch | Aktiv */}
+      <div className="flex items-center gap-4 flex-wrap">
+        <span
+          className={`text-xs tracking-widest w-16 text-right ${!form.isActive ? 'text-gray-900 font-medium' : 'text-gray-300'}`}
+        >
+          INAKTIV
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={form.isActive}
+          title="Nur aktive Einträge erscheinen auf der Website unter Genuss."
+          onClick={() => setForm(prev => ({ ...prev, isActive: !prev.isActive }))}
+          className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
+            form.isActive ? 'bg-gray-900' : 'bg-gray-200'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 h-5 w-5 bg-white rounded-full shadow transition-[left] duration-200 ease-out ${
+              form.isActive ? 'left-[calc(100%-1.375rem)]' : 'left-0.5'
+            }`}
+          />
+        </button>
+        <span
+          className={`text-xs tracking-widest w-16 ${form.isActive ? 'text-gray-900 font-medium' : 'text-gray-300'}`}
+        >
+          AKTIV
+        </span>
+      </div>
+
+      {/* Preview */}
+      <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
+        <p className="text-[10px] tracking-widest text-gray-400 mb-4">VORSCHAU</p>
+        <div className="flex justify-between border-b border-gray-200 py-3 gap-4">
+          <div className="flex flex-col items-start text-left flex-1 min-w-0">
+            <span className="text-base font-semibold text-gray-900 uppercase leading-snug">
+              {previewTitle}
+            </span>
+            {showDescPreview && (
+              <span className="text-sm text-gray-600 mt-2 uppercase leading-relaxed">
+                {form.Beschreibung}
+              </span>
             )}
           </div>
-
-          {/* Allergens */}
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] tracking-widest text-gray-400">ALLERGENE</label>
-            <div className="grid grid-cols-2 gap-1.5">
-              {EU_ALLERGENS.map(a => (
-                <label key={a.id} className="flex items-center gap-2 cursor-pointer group">
-                  <div
-                    onClick={() => toggleAllergen(a.id)}
-                    className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors cursor-pointer ${
-                      form.allergens.includes(a.id)
-                        ? 'bg-gray-900 border-gray-900'
-                        : 'border-gray-200 group-hover:border-gray-400'
-                    }`}
-                  >
-                    {form.allergens.includes(a.id) && (
-                      <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-xs text-gray-600 leading-tight">{a.label}</span>
-                </label>
-              ))}
-            </div>
+          <div className="flex flex-col items-end whitespace-nowrap text-sm shrink-0">
+            {form.Typ === 'Wein' ? (
+              <>
+                <span className="text-gray-900">
+                  {eurGlas || eurFlasche
+                    ? displayWeinPreisLine(composeWeinPreisString(weinGlas, eurGlas))
+                    : '–'}
+                </span>
+                {(eurFlasche || form.Preis_Flasche) && (
+                  <span className="text-sm text-gray-600 mt-1">
+                    {eurFlasche
+                      ? displayWeinFlascheLine(composeWeinFlascheString(eurFlasche))
+                      : displayWeinFlascheLine(form.Preis_Flasche || '')}
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-gray-900">
+                {form.Preis.trim() ? displaySpeisePreis(form.Preis) : '–'}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {error && <p className="text-xs text-red-500">{error}</p>}
 
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-3">
         <button
           type="submit"
           disabled={saving}

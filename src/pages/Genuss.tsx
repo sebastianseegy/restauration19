@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { fetchMenuData, MenuItem } from '../services/googleSheets';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+import {
+  MenuItem,
+  displaySpeisePreis,
+  displayWeinFlascheLine,
+  displayWeinPreisLine,
+} from '../types/menu';
 import { ParallaxImageGroup } from '../components/ParallaxImageGroup';
 
 export default function Genuss() {
@@ -7,12 +14,13 @@ export default function Genuss() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadData() {
-      const data = await fetchMenuData();
-      setMenuItems(data);
-      setLoading(false);
-    }
-    loadData();
+    getDocs(collection(db, 'menuItems'))
+      .then(snap => {
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as MenuItem[];
+        setMenuItems(data.filter(i => i.isActive && i.Typ && i.Titel));
+      })
+      .catch(() => setMenuItems([]))
+      .finally(() => setLoading(false));
   }, []);
 
   // Feste Kategorien — immer angezeigt, auch wenn keine aktiven Gerichte vorhanden
@@ -51,7 +59,7 @@ export default function Genuss() {
                         <span className="uppercase">{item.Titel}</span>
                         {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
                       </div>
-                      <span className="whitespace-nowrap">{item.Preis}</span>
+                      <span className="whitespace-nowrap">{displaySpeisePreis(item.Preis)}</span>
                     </div>
                   ))}
                 </div>
@@ -80,8 +88,12 @@ export default function Genuss() {
                         {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
                       </div>
                       <div className="flex flex-col items-end whitespace-nowrap">
-                        <span>{item.Preis}</span>
-                        {item.Preis_Flasche && <span className="text-xs text-gray-500 mt-1 uppercase">{item.Preis_Flasche}</span>}
+                        <span>{displayWeinPreisLine(item.Preis)}</span>
+                        {item.Preis_Flasche && (
+                          <span className="text-xs text-gray-500 mt-1 uppercase">
+                            {displayWeinFlascheLine(item.Preis_Flasche)}
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))}

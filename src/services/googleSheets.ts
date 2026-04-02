@@ -15,7 +15,8 @@ import Papa from 'papaparse';
 // 3. Wähle "Gesamtes Dokument" (oder das spezifische Tabellenblatt) und als Format "Kommagetrennte Werte (.csv)".
 // 4. Klicke auf "Veröffentlichen" und kopiere den generierten Link.
 // 5. Füge den Link hier zwischen die Anführungszeichen ein:
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSKw_48RiU6g4o80oxhiKPf4hcZfu16SZuoXnQdFlOAXKXAziQjF4D8fPTRyirWu4KYpsCQRgYvlpuW/pub?gid=420869367&single=true&output=csv';
+export const SHEET_CSV_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vSKw_48RiU6g4o80oxhiKPf4hcZfu16SZuoXnQdFlOAXKXAziQjF4D8fPTRyirWu4KYpsCQRgYvlpuW/pub?gid=420869367&single=true&output=csv';
 
 export interface MenuItem {
   Typ: 'Speise' | 'Wein';

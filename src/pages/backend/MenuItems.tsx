@@ -1,20 +1,33 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { MenuItem, CATEGORY_LABELS } from '../../types/menu';
+import {
+  MenuItem,
+  compareMenuKategorie,
+  displaySpeisePreis,
+  displayWeinFlascheLine,
+  displayWeinPreisLine,
+} from '../../types/menu';
 import { Link } from 'react-router-dom';
 
 export default function MenuItems() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [filter, setFilter] = useState<'all' | 'Speise' | 'Wein'>('all');
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const fetchItems = async () => {
     try {
       const snap = await getDocs(collection(db, 'menuItems'));
       const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as MenuItem[];
-      data.sort((a, b) => a.category.localeCompare(b.category));
-      setItems(data);
+      const valid = data.filter(i => i.Typ && i.Titel);
+      valid.sort(
+        (a, b) =>
+          a.Typ.localeCompare(b.Typ) ||
+          compareMenuKategorie(a.Typ, a.Kategorie || '', b.Kategorie || '') ||
+          (a.Titel || '').localeCompare(b.Titel || '', 'de')
+      );
+      setItems(valid);
     } catch {
       setItems([]);
     } finally {
@@ -22,7 +35,9 @@ export default function MenuItems() {
     }
   };
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Dieses Item wirklich löschen?')) return;
@@ -30,45 +45,81 @@ export default function MenuItems() {
     setItems(prev => prev.filter(i => i.id !== id));
   };
 
-  const handleToggleActive = async (item: MenuItem) => {
+  const handleToggle = async (item: MenuItem) => {
     await updateDoc(doc(db, 'menuItems', item.id), { isActive: !item.isActive });
-    setItems(prev => prev.map(i => i.id === item.id ? { ...i, isActive: !i.isActive } : i));
+    setItems(prev => prev.map(i => (i.id === item.id ? { ...i, isActive: !i.isActive } : i)));
   };
 
-  const filtered = items.filter(i => {
-    if (filter === 'active') return i.isActive;
-    if (filter === 'inactive') return !i.isActive;
-    return true;
-  });
+  const filtered = filter === 'all' ? items : items.filter(i => i.Typ === filter);
+
+  const setAllFilteredActive = async (active: boolean) => {
+    if (filtered.length === 0) return;
+    setBulkBusy(true);
+    try {
+      const batch = writeBatch(db);
+      filtered.forEach(item => {
+        batch.update(doc(db, 'menuItems', item.id), { isActive: active });
+      });
+      await batch.commit();
+      setItems(prev =>
+        prev.map(i => (filtered.some(f => f.id === i.id) ? { ...i, isActive: active } : i))
+      );
+    } finally {
+      setBulkBusy(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 max-w-5xl">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xs tracking-widest text-gray-400 mb-1">SPEISEKARTE</h1>
           <p className="text-sm text-gray-500">{items.length} Einträge</p>
         </div>
-        <Link
-          to="/backend/menu/new"
-          className="bg-gray-900 text-white text-xs tracking-widest px-5 py-2.5 rounded-lg hover:bg-gray-700 transition-colors"
-        >
-          + HINZUFÜGEN
-        </Link>
+        <div className="flex flex-wrap gap-2 justify-end">
+          <Link
+            to="/backend/menu/new"
+            className="bg-gray-900 text-white text-xs tracking-widest px-5 py-2.5 rounded-lg hover:bg-gray-700 transition-colors inline-flex items-center"
+          >
+            + HINZUFÜGEN
+          </Link>
+        </div>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex gap-2">
-        {(['all', 'active', 'inactive'] as const).map(f => (
+      <div className="flex flex-wrap gap-2 items-center">
+        {(['all', 'Speise', 'Wein'] as const).map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`text-xs tracking-widest px-4 py-2 rounded-lg transition-colors ${
-              filter === f ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-400'
+              filter === f
+                ? 'bg-gray-900 text-white'
+                : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-400'
             }`}
           >
-            {f === 'all' ? 'ALLE' : f === 'active' ? 'AKTIV' : 'INAKTIV'}
+            {f === 'all' ? 'ALLE' : f.toUpperCase()}
           </button>
         ))}
+        {filtered.length > 0 && (
+          <div className="flex gap-2 ml-auto flex-wrap">
+            <button
+              type="button"
+              disabled={bulkBusy}
+              onClick={() => setAllFilteredActive(true)}
+              className="text-xs tracking-widest px-3 py-2 rounded-lg border border-green-200 text-green-800 bg-green-50 hover:bg-green-100 disabled:opacity-50"
+            >
+              ALLE ANZEIGEN ({filter === 'all' ? 'alle' : filter})
+            </button>
+            <button
+              type="button"
+              disabled={bulkBusy}
+              onClick={() => setAllFilteredActive(false)}
+              className="text-xs tracking-widest px-3 py-2 rounded-lg border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 disabled:opacity-50"
+            >
+              ALLE AUSBLENDEN ({filter === 'all' ? 'alle' : filter})
+            </button>
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -78,7 +129,10 @@ export default function MenuItems() {
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
           <p className="text-sm text-gray-400">Noch keine Einträge.</p>
-          <Link to="/backend/menu/new" className="text-xs tracking-widest text-gray-900 mt-3 inline-block underline">
+          <Link
+            to="/backend/menu/new"
+            className="text-xs tracking-widest text-gray-900 mt-3 inline-block underline"
+          >
             Ersten Eintrag erstellen
           </Link>
         </div>
@@ -87,50 +141,49 @@ export default function MenuItems() {
           {filtered.map((item, i) => (
             <div
               key={item.id}
-              className={`flex items-center gap-4 px-6 py-4 ${i !== filtered.length - 1 ? 'border-b border-gray-50' : ''}`}
+              className={`flex items-center gap-3 px-4 sm:px-6 py-4 ${
+                i !== filtered.length - 1 ? 'border-b border-gray-50' : ''
+              }`}
             >
-              {/* Image */}
-              <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                {item.imageUrl ? (
-                  <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">–</div>
-                )}
-              </div>
+              <label className="flex items-center cursor-pointer shrink-0">
+                <input
+                  type="checkbox"
+                  checked={item.isActive}
+                  onChange={() => handleToggle(item)}
+                  className="w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-gray-400"
+                />
+                <span className="sr-only">Auf der Karte sichtbar</span>
+              </label>
 
-              {/* Info */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-gray-900 truncate">{item.name?.de || '–'}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span
+                    className={`text-[10px] tracking-widest px-2 py-0.5 rounded ${
+                      item.Typ === 'Wein' ? 'bg-purple-50 text-purple-600' : 'bg-orange-50 text-orange-600'
+                    }`}
+                  >
+                    {item.Typ.toUpperCase()}
+                  </span>
                   <span className="text-[10px] tracking-widest text-gray-400 bg-gray-50 px-2 py-0.5 rounded">
-                    {CATEGORY_LABELS[item.category] || item.category}
+                    {item.Kategorie}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 truncate mt-0.5">{item.description?.de || ''}</p>
-                {item.allergens?.length > 0 && (
-                  <p className="text-[10px] text-gray-300 mt-0.5">{item.allergens.join(', ')}</p>
+                <p className="text-sm font-medium text-gray-900 mt-1">{item.Titel}</p>
+                {item.Beschreibung && <p className="text-xs text-gray-400">{item.Beschreibung}</p>}
+              </div>
+
+              <div className="text-right flex-shrink-0 hidden sm:block">
+                <p className="text-sm text-gray-900">
+                  {item.Typ === 'Wein'
+                    ? displayWeinPreisLine(item.Preis)
+                    : displaySpeisePreis(item.Preis)}
+                </p>
+                {item.Typ === 'Wein' && item.Preis_Flasche && (
+                  <p className="text-xs text-gray-400">{displayWeinFlascheLine(item.Preis_Flasche)}</p>
                 )}
               </div>
 
-              {/* Price */}
-              <p className="text-sm font-medium text-gray-900 flex-shrink-0">
-                {item.price ? `${item.price.toFixed(2)} €` : '–'}
-              </p>
-
-              {/* Active toggle */}
-              <button
-                onClick={() => handleToggleActive(item)}
-                className={`text-[10px] tracking-widest px-3 py-1.5 rounded-lg transition-colors flex-shrink-0 ${
-                  item.isActive
-                    ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                    : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
-                }`}
-              >
-                {item.isActive ? 'AKTIV' : 'INAKTIV'}
-              </button>
-
-              {/* Actions */}
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex gap-1 flex-shrink-0">
                 <Link
                   to={`/backend/menu/${item.id}`}
                   className="text-xs text-gray-400 hover:text-gray-900 transition-colors px-2 py-1"
