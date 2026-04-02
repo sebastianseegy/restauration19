@@ -6,8 +6,7 @@ export default function Home() {
       <div className="flex flex-col items-center w-full gap-8 md:gap-12">
         <section className="max-w-4xl mx-auto">
           <p className="text-sm md:text-xl leading-relaxed">
-            RESTAURATION19, EIN RESTAURANT IM BISTROSTIL - <br />
-            EINFACH(E) GENUSSKÜCHE UND BESONDERE WEINAUSWAHL
+            RESTAURANT IM BISTROSTIL – EINFACH(E) GENUSSKÜCHE UND BESONDERE WEINAUSWAHL
           </p>
         </section>
 
