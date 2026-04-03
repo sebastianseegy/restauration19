@@ -168,22 +168,31 @@ export default function MenuItems() {
                     {item.Kategorie}
                   </span>
                 </div>
-                <p className="text-sm font-medium text-gray-900 mt-1">{item.Titel}</p>
-                {item.Beschreibung && <p className="text-xs text-gray-400">{item.Beschreibung}</p>}
+                <p className="text-sm font-medium text-gray-900 mt-1 uppercase">{item.Titel}</p>
+                {item.Beschreibung && <p className="text-xs text-gray-400 uppercase">{item.Beschreibung}</p>}
               </div>
 
               <div className="text-right flex-shrink-0 hidden sm:block">
-                <p className="text-sm text-gray-900">
-                  {item.Typ === 'Wein'
-                    ? displayWeinPreisLine(item.Preis)
-                    : displaySpeisePreis(item.Preis)}
-                </p>
-                {item.Typ === 'Wein' && item.Preis_Flasche && (
-                  <p className="text-xs text-gray-400">{displayWeinFlascheLine(item.Preis_Flasche)}</p>
+                {item.Typ === 'Wein' ? (
+                  item.Preis ? (
+                    // FALL: Glaspreis vorhanden -> Glas oben, Flasche klein darunter
+                    <>
+                      <p className="text-sm text-gray-900">{displayWeinPreisLine(item.Preis)}</p>
+                      {item.Preis_Flasche && (
+                        <p className="text-xs text-gray-400">{displayWeinFlascheLine(item.Preis_Flasche)}</p>
+                      )}
+                    </>
+                  ) : (
+                    // FALL: Nur Flasche -> Flaschenpreis steht prominent oben im "Glas-Slot"
+                    <p className="text-sm text-gray-900">{displayWeinFlascheLine(item.Preis_Flasche || '')}</p>
+                  )
+                ) : (
+                  // FALL: Speise -> Normaler Preis
+                  <p className="text-sm text-gray-900">{displaySpeisePreis(item.Preis)}</p>
                 )}
               </div>
 
-              <div className="flex gap-1 flex-shrink-0">
+              <div className="flex gap-1 flex-shrink-0 ml-4">
                 <Link
                   to={`/backend/menu/${item.id}`}
                   className="text-xs text-gray-400 hover:text-gray-900 transition-colors px-2 py-1"

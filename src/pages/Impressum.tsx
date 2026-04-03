@@ -3,82 +3,88 @@ export default function Impressum() {
     <div className="max-w-3xl mx-auto text-left flex flex-col gap-8 text-sm md:text-base">
       <h1 className="text-2xl mb-8 text-center">IMPRESSUM</h1>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 normal-case">
         <p>
-          HERMANNS &amp; RÜTZEL GBR<br/>
-          RESTAURATION19<br/>
-          HELMSTRASSE 19<br/>
-          90419 NÜRNBERG
+          Hermanns &amp; Rützel GbR<br/>
+          Restauration19<br/>
+          Helmstraße 19<br/>
+          90419 Nürnberg
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">KONTAKT</p>
-        <p>
-          TELEFON: 0911 25350782<br/>
-          E-MAIL: <a href="mailto:info@restauration19.de" className="hover:text-brand-pink transition-colors">INFO@RESTAURATION19.DE</a>
+        <p className="normal-case">
+          Telefon: 0911 25350782<br/>
+          E-Mail: <a href="mailto:info@restauration19.de" className="hover:text-brand-pink transition-colors">info@restauration19.de</a>
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">VERTRETUNGSBERECHTIGTE GESELLSCHAFTER</p>
-        <p>FLORIAN HERMANNS, KRISPIN RÜTZEL</p>
+        <p className="normal-case">Florian Hermanns, Krispin Rützel</p>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">UMSATZSTEUER-IDENTIFIKATIONSNUMMER GEMÄSS §27 A UMSATZSTEUERGESETZ</p>
-        <p>DE 461 020 856</p>
+        <p className="normal-case">DE 461 020 856</p>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">ZUSTÄNDIGE AUFSICHTSBEHÖRDE</p>
-        <p>
-          ORDNUNGSAMT NÜRNBERG<br/>
-          INNERER LAUFER PLATZ 3<br/>
-          90403 NÜRNBERG
+        <p className="normal-case">
+          Ordnungsamt Nürnberg<br/>
+          Innerer Laufer Platz 3<br/>
+          90403 Nürnberg
         </p>
-        <a href="https://www.nuernberg.de/internet/ordnungsamt/gaststaetten.html" target="_blank" rel="noopener noreferrer" className="hover:text-brand-pink transition-colors break-all">
-          HTTPS://WWW.NUERNBERG.DE/INTERNET/ORDNUNGSAMT/GASTSTAETTEN.HTML
+        <a href="https://www.nuernberg.de/internet/ordnungsamt/gaststaetten.html" target="_blank" rel="noopener noreferrer" className="hover:text-brand-pink transition-colors break-all normal-case">
+          https://www.nuernberg.de/internet/ordnungsamt/gaststaetten.html
         </a>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">VERBRAUCHERSTREITBEILEGUNG/­UNIVERSALSCHLICHTUNGSSTELLE</p>
-        <p>WIR SIND NICHT BEREIT ODER VERPFLICHTET, AN STREITBEILEGUNGSVERFAHREN VOR EINER VERBRAUCHERSCHLICHTUNGSSTELLE TEILZUNEHMEN.</p>
+        <p className="normal-case">Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">EU-STREITSCHLICHTUNG</p>
-        <p>
-          DIE EUROPÄISCHE KOMMISSION STELLT EINE PLATTFORM ZUR ONLINE-STREITBEILEGUNG (OS) BEREIT:{' '}
+        <p className="normal-case">
+          Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:{' '}
           <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="hover:text-brand-pink transition-colors break-all">
-            HTTPS://EC.EUROPA.EU/CONSUMERS/ODR
+            https://ec.europa.eu/consumers/odr
           </a>.
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">QUELLENANGABEN FÜR DIE VERWENDETEN BILDER</p>
-        <p>QUIRIN STAUFER</p>
+        <p className="normal-case">Quirin Staufer</p>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">HAFTUNG FÜR INHALTE</p>
-        <p>ALS DIENSTEANBIETER SIND WIR GEMÄSS § 7 ABS.1 DDG FÜR EIGENE INHALTE AUF DIESEN SEITEN NACH DEN ALLGEMEINEN GESETZEN VERANTWORTLICH. NACH §§ 8 BIS 10 DDG SIND WIR ALS DIENSTEANBIETER JEDOCH NICHT VERPFLICHTET, ÜBERMITTELTE ODER GESPEICHERTE FREMDE INFORMATIONEN ZU ÜBERWACHEN ODER NACH UMSTÄNDEN ZU FORSCHEN, DIE AUF EINE RECHTSWIDRIGE TÄTIGKEIT HINWEISEN.</p>
-        <p>VERPFLICHTUNGEN ZUR ENTFERNUNG ODER SPERRUNG DER NUTZUNG VON INFORMATIONEN NACH DEN ALLGEMEINEN GESETZEN BLEIBEN HIERVON UNBERÜHRT. EINE DIESBEZÜGLICHE HAFTUNG IST JEDOCH ERST AB DEM ZEITPUNKT DER KENNTNIS EINER KONKRETEN RECHTSVERLETZUNG MÖGLICH. BEI BEKANNTWERDEN VON ENTSPRECHENDEN RECHTSVERLETZUNGEN WERDEN WIR DIESE INHALTE UMGEHEND ENTFERNEN.</p>
+        <div className="normal-case flex flex-col gap-2">
+          <p>Als Diensteanbieter sind wir gemäß § 7 Abs.1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+          <p>Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.</p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">HAFTUNG FÜR LINKS</p>
-        <p>UNSER ANGEBOT ENTHÄLT LINKS ZU EXTERNEN WEBSITES DRITTER, AUF DEREN INHALTE WIR KEINEN EINFLUSS HABEN. DESHALB KÖNNEN WIR FÜR DIESE FREMDEN INHALTE AUCH KEINE GEWÄHR ÜBERNEHMEN. FÜR DIE INHALTE DER VERLINKTEN SEITEN IST STETS DER JEWEILIGE ANBIETER ODER BETREIBER DER SEITEN VERANTWORTLICH. DIE VERLINKTEN SEITEN WURDEN ZUM ZEITPUNKT DER VERLINKUNG AUF MÖGLICHE RECHTSVERSTÖSSE ÜBERPRÜFT. RECHTSWIDRIGE INHALTE WAREN ZUM ZEITPUNKT DER VERLINKUNG NICHT ERKENNBAR.</p>
-        <p>EINE PERMANENTE INHALTLICHE KONTROLLE DER VERLINKTEN SEITEN IST JEDOCH OHNE KONKRETE ANHALTSPUNKTE EINER RECHTSVERLETZUNG NICHT ZUMUTBAR. BEI BEKANNTWERDEN VON RECHTSVERLETZUNGEN WERDEN WIR DERARTIGE LINKS UMGEHEND ENTFERNEN.</p>
+        <div className="normal-case flex flex-col gap-2">
+          <p>Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.</p>
+          <p>Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">
         <p className="font-bold">URHEBERRECHT</p>
-        <p>DIE DURCH DIE SEITENBETREIBER ERSTELLTEN INHALTE UND WERKE AUF DIESEN SEITEN UNTERLIEGEN DEM DEUTSCHEN URHEBERRECHT. DIE VERVIELFÄLTIGUNG, BEARBEITUNG, VERBREITUNG UND JEDE ART DER VERWERTUNG AUSSERHALB DER GRENZEN DES URHEBERRECHTES BEDÜRFEN DER SCHRIFTLICHEN ZUSTIMMUNG DES JEWEILIGEN AUTORS BZW. ERSTELLERS. DOWNLOADS UND KOPIEN DIESER SEITE SIND NUR FÜR DEN PRIVATEN, NICHT KOMMERZIELLEN GEBRAUCH GESTATTET.</p>
-        <p>SOWEIT DIE INHALTE AUF DIESER SEITE NICHT VOM BETREIBER ERSTELLT WURDEN, WERDEN DIE URHEBERRECHTE DRITTER BEACHTET. INSBESONDERE WERDEN INHALTE DRITTER ALS SOLCHE GEKENNZEICHNET. SOLLTEN SIE TROTZDEM AUF EINE URHEBERRECHTSVERLETZUNG AUFMERKSAM WERDEN, BITTEN WIR UM EINEN ENTSPRECHENDEN HINWEIS. BEI BEKANNTWERDEN VON RECHTSVERLETZUNGEN WERDEN WIR DERARTIGE INHALTE UMGEHEND ENTFERNEN.</p>
-        <p className="text-gray-400 text-xs mt-2">QUELLENHINWEIS: WWW.E-RECHT24.DE</p>
+        <div className="normal-case flex flex-col gap-2">
+          <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.</p>
+          <p>Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.</p>
+        </div>
+        <p className="text-gray-400 text-xs mt-2 normal-case">Quellenhinweis: www.e-recht24.de</p>
       </div>
     </div>
   );

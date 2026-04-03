@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -51,7 +51,9 @@ export default function MenuItemForm() {
     customSpeiseKategorien: [],
     customWeinKategorien: [],
   });
-  const [weinGlas, setWeinGlas] = useState<WeinGlasMl>('0,2');
+
+  // Festgelegt auf 0,125 l (Konstante statt State, da keine Auswahl mehr nötig)
+  const weinGlas: WeinGlasMl = '0,125' as any; 
   const [eurGlas, setEurGlas] = useState('');
   const [eurFlasche, setEurFlasche] = useState('');
 
@@ -66,7 +68,7 @@ export default function MenuItemForm() {
 
   const syncWeinFromStrings = useCallback((preis: string, flasche: string) => {
     const p = parseWeinPrices(preis || '', flasche || '');
-    setWeinGlas(p.glas);
+    // setWeinGlas(p.glas); // ENTFERNT, da weinGlas jetzt fest ist
     setEurGlas(p.eurGlas);
     setEurFlasche(p.eurFlasche);
   }, []);
@@ -95,12 +97,23 @@ export default function MenuItemForm() {
               isActive: d.isActive ?? true,
             });
             if (typ === 'Wein') {
-              syncWeinFromStrings(d.Preis || '', d.Preis_Flasche || '');
+              const rawP = d.Preis || '';
+              const rawF = d.Preis_Flasche || '';
+              const parsed = parseWeinPrices(rawP, rawF);
+              // #region agent log
+              fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H1',location:'MenuItemForm.tsx:wein-load',message:'Wein doc parse',data:{id,rawPreisLen:rawP.length,rawFlascheLen:rawF.length,parsedEurGlas:parsed.eurGlas,parsedEurFlasche:parsed.eurFlasche},timestamp:Date.now()})}).catch(()=>{});
+              // #endregion
+              syncWeinFromStrings(rawP, rawF);
             }
           }
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          // #region agent log
+          fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H2',location:'MenuItemForm.tsx:load-finally',message:'load finished',data:{isNew,loadId:id,cancelled},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          setLoading(false);
+        }
       }
     })();
     return () => {
@@ -111,7 +124,6 @@ export default function MenuItemForm() {
   const handleTypChange = (typ: MenuTyp) => {
     const defaultKat = typ === 'Speise' ? SPEISE_KATEGORIEN[0] : WEIN_KATEGORIEN[0];
     if (typ === 'Wein') {
-      setWeinGlas('0,2');
       setEurGlas('');
       setEurFlasche('');
       setForm(prev => ({
@@ -126,20 +138,24 @@ export default function MenuItemForm() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!form.Titel.trim()) {
       setError('Titel ist erforderlich.');
       return;
     }
+
     let preis = form.Preis;
     let preisFlasche = form.Preis_Flasche || '';
+
     if (form.Typ === 'Wein') {
-      if (!eurGlas.trim() || !eurFlasche.trim()) {
-        setError('Preis Glas und Preis Flasche sind erforderlich.');
+      // Nur Flaschenpreis ist zwingend erforderlich
+      if (!eurFlasche.trim()) {
+        setError('Der Preis für die Flasche ist erforderlich.');
         return;
       }
-      preis = composeWeinPreisString(weinGlas, eurGlas);
+      // Glas-Preis wird nur generiert, wenn das Feld ausgefüllt wurde
+      preis = eurGlas.trim() ? composeWeinPreisString(eurGlas) : '';
       preisFlasche = composeWeinFlascheString(eurFlasche);
     } else {
       if (!form.Preis.trim()) {
@@ -154,6 +170,10 @@ export default function MenuItemForm() {
     try {
       const now = new Date().toISOString();
       const docId = isNew ? `${Date.now()}` : id!;
+      // #region agent log
+      const opts = mergeCategoryOptions(form.Typ, menuMeta, form.Kategorie);
+      fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H5',location:'MenuItemForm.tsx:submit-inputs',message:'submit computed prices',data:{typ:form.Typ,eurGlas,eurFlasche,preis,preisFlasche,formPreis:form.Preis,h4Kategorie:form.Kategorie,h4InOptions:opts.includes(form.Kategorie)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       const data: MenuItem = {
         id: docId,
         ...form,
@@ -163,6 +183,10 @@ export default function MenuItemForm() {
         updatedAt: now,
         createdAt: isNew ? now : (await getDoc(doc(db, 'menuItems', docId))).data()?.createdAt || now,
       };
+      // #region agent log
+      const undefKeys = Object.entries(data as unknown as Record<string, unknown>).filter(([, v]) => v === undefined).map(([k]) => k);
+      fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H3',location:'MenuItemForm.tsx:submit-data',message:'payload before write',data:{docId,isNew,undefKeys,keys:Object.keys(data)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
 
       if (isNew) {
         await setDoc(doc(db, 'menuItems', docId), data);
@@ -171,6 +195,10 @@ export default function MenuItemForm() {
       }
       navigate('/backend/menu');
     } catch (err) {
+      // #region agent log
+      const e = err as { code?: string; message?: string };
+      fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H3',location:'MenuItemForm.tsx:submit-catch',message:'save failed',data:{code:e?.code,msg:e?.message},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       setError('Fehler beim Speichern. Bitte erneut versuchen.');
       console.error(err);
     } finally {
@@ -190,7 +218,7 @@ export default function MenuItemForm() {
   const showDescPreview = Boolean(form.Beschreibung?.trim());
 
   const fieldCls =
-    'border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 bg-white';
+    'border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 bg-white w-full';
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-2xl">
@@ -210,23 +238,21 @@ export default function MenuItemForm() {
       {/* Typ */}
       <div className="flex flex-col gap-2">
         <label className="text-xs font-medium text-gray-700 tracking-wide">TYP</label>
-        <div className="flex justify-center w-full">
-          <div className="flex gap-2 flex-wrap justify-center">
-            {(['Speise', 'Wein'] as MenuTyp[]).map(t => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => handleTypChange(t)}
-                className={`text-xs tracking-widest px-6 py-2.5 rounded-lg transition-colors ${
-                  form.Typ === t
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-400'
-                }`}
-              >
-                {t.toUpperCase()}
-              </button>
-            ))}
-          </div>
+        <div className="flex gap-2">
+          {(['Speise', 'Wein'] as MenuTyp[]).map(t => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => handleTypChange(t)}
+              className={`text-xs tracking-widest px-6 py-2.5 rounded-lg transition-colors flex-1 ${
+                form.Typ === t
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-400'
+              }`}
+            >
+              {t.toUpperCase()}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -285,22 +311,12 @@ export default function MenuItemForm() {
 
       {/* Preis Wein */}
       {form.Typ === 'Wein' && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-medium text-gray-700 tracking-wide">GLAS (l)</label>
-            <select
-              value={weinGlas}
-              onChange={e => setWeinGlas(e.target.value as WeinGlasMl)}
-              className={fieldCls}
-            >
-              <option value="0,1">0,1 l</option>
-              <option value="0,2">0,2 l</option>
-            </select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-medium text-gray-700 tracking-wide">PREIS GLAS *</label>
+            <label className="text-xs font-medium text-gray-700 tracking-wide">PREIS GLAS (0,125 l)</label>
             <input
               type="text"
+              placeholder="Optional (leer lassen für nur Flasche)"
               value={eurGlas}
               onChange={e => setEurGlas(e.target.value)}
               className={fieldCls}
@@ -318,32 +334,21 @@ export default function MenuItemForm() {
         </div>
       )}
 
-      {/* Active toggle: Inaktiv | switch | Aktiv */}
+      {/* Active toggle */}
       <div className="flex items-center gap-4 flex-wrap">
-        <span
-          className={`text-xs tracking-widest w-16 text-right ${!form.isActive ? 'text-gray-900 font-medium' : 'text-gray-300'}`}
-        >
+        <span className={`text-xs tracking-widest w-16 text-right ${!form.isActive ? 'text-gray-900 font-medium' : 'text-gray-300'}`}>
           INAKTIV
         </span>
         <button
           type="button"
           role="switch"
           aria-checked={form.isActive}
-          title="Nur aktive Einträge erscheinen auf der Website unter Genuss."
           onClick={() => setForm(prev => ({ ...prev, isActive: !prev.isActive }))}
-          className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
-            form.isActive ? 'bg-gray-900' : 'bg-gray-200'
-          }`}
+          className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${form.isActive ? 'bg-gray-900' : 'bg-gray-200'}`}
         >
-          <span
-            className={`absolute top-0.5 h-5 w-5 bg-white rounded-full shadow transition-[left] duration-200 ease-out ${
-              form.isActive ? 'left-[calc(100%-1.375rem)]' : 'left-0.5'
-            }`}
-          />
+          <span className={`absolute top-0.5 h-5 w-5 bg-white rounded-full shadow transition-[left] duration-200 ease-out ${form.isActive ? 'left-[calc(100%-1.375rem)]' : 'left-0.5'}`} />
         </button>
-        <span
-          className={`text-xs tracking-widest w-16 ${form.isActive ? 'text-gray-900 font-medium' : 'text-gray-300'}`}
-        >
+        <span className={`text-xs tracking-widest w-16 ${form.isActive ? 'text-gray-900 font-medium' : 'text-gray-300'}`}>
           AKTIV
         </span>
       </div>
@@ -365,18 +370,17 @@ export default function MenuItemForm() {
           <div className="flex flex-col items-end whitespace-nowrap text-sm shrink-0">
             {form.Typ === 'Wein' ? (
               <>
-                <span className="text-gray-900">
-                  {eurGlas || eurFlasche
-                    ? displayWeinPreisLine(composeWeinPreisString(weinGlas, eurGlas))
-                    : '–'}
-                </span>
-                {(eurFlasche || form.Preis_Flasche) && (
-                  <span className="text-sm text-gray-600 mt-1">
-                    {eurFlasche
-                      ? displayWeinFlascheLine(composeWeinFlascheString(eurFlasche))
-                      : displayWeinFlascheLine(form.Preis_Flasche || '')}
+                {eurGlas && (
+                  <span className="text-gray-900">
+                    {displayWeinPreisLine(composeWeinPreisString(eurGlas))}
                   </span>
                 )}
+                {eurFlasche && (
+                  <span className="text-sm text-gray-600 mt-1">
+                    {displayWeinFlascheLine(composeWeinFlascheString(eurFlasche))}
+                  </span>
+                )}
+                {!eurGlas && !eurFlasche && <span className="text-gray-900">–</span>}
               </>
             ) : (
               <span className="text-gray-900">

@@ -88,11 +88,17 @@ export default function Genuss() {
                         {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
                       </div>
                       <div className="flex flex-col items-end whitespace-nowrap">
-                        <span>{displayWeinPreisLine(item.Preis)}</span>
-                        {item.Preis_Flasche && (
-                          <span className="text-xs text-gray-500 mt-1 uppercase">
-                            {displayWeinFlascheLine(item.Preis_Flasche)}
-                          </span>
+                        {item.Preis ? (
+                          <>
+                            <span>{displayWeinPreisLine(item.Preis)}</span>
+                            {item.Preis_Flasche && (
+                              <span className="text-xs text-gray-500 mt-1 uppercase">
+                                {displayWeinFlascheLine(item.Preis_Flasche)}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span>{displayWeinFlascheLine(item.Preis_Flasche ?? '')}</span>
                         )}
                       </div>
                     </div>

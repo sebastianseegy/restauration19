@@ -1,6 +1,6 @@
 export type MenuTyp = 'Speise' | 'Wein';
 
-export type WeinGlasMl = '0,1' | '0,2';
+export type WeinGlasMl = '0,125'; // Festgelegt auf 0,125L
 
 export const SPEISE_KATEGORIEN = ['KLEINIGKEITEN', 'WARME GERICHTE', 'SÜSSES'];
 export const WEIN_KATEGORIEN = ['SCHAUMWEIN', 'WEISSWEIN', 'ROTWEIN'];
@@ -28,12 +28,12 @@ export function displaySpeisePreis(stored: string): string {
   return formatEurSuffix(s);
 }
 
-/** Öffentliche Darstellung der Glas-Zeile (z. B. "0,2L | 7,50" → "0,2L | 7,50 €"). */
+/** Öffentliche Darstellung der Glas-Zeile (Erkennt 0,1L, 0,2L und das neue 0,125L). */
 export function displayWeinPreisLine(stored: string): string {
   const t = stored.trim();
   if (!t) return '';
-  const m = t.match(/^(0,1L\s*\|\s*)(.+)$/i) || t.match(/^(0,2L\s*\|\s*)(.+)$/i);
-  if (m) return m[1] + formatEurSuffix(stripEurAmount(m[2]));
+  const m = t.match(/^(0,125L|0,1L|0,2L)\s*\|\s*(.+)$/i);
+  if (m) return `0,125L | ${formatEurSuffix(stripEurAmount(m[2]))}`;
   return formatEurSuffix(stripEurAmount(t));
 }
 
@@ -54,7 +54,7 @@ function kategorieRank(typ: MenuTyp, k: string): number {
   return i === -1 ? KATEGORIE_RANK_FALLBACK : i;
 }
 
-/** Feste Reihenfolge KLEINIGKEITEN → WARME GERICHTE → SÜSSES (bzw. Wein-Standard); Custom-Kategorien alphabetisch danach. */
+/** Feste Reihenfolge der Kategorien für die Sortierung. */
 export function compareMenuKategorie(typ: MenuTyp, a: string, b: string): number {
   const ra = kategorieRank(typ, a);
   const rb = kategorieRank(typ, b);
@@ -62,38 +62,29 @@ export function compareMenuKategorie(typ: MenuTyp, a: string, b: string): number
   return a.localeCompare(b, 'de');
 }
 
-export function composeWeinPreisString(glas: WeinGlasMl, eurGlas: string): string {
-  return `${glas}L | ${stripEurAmount(eurGlas)}`;
+/** Setzt den String für die Datenbank zusammen (Immer 0,125L). */
+export function composeWeinPreisString(eurGlas: string): string {
+  const cleaned = stripEurAmount(eurGlas);
+  if (!cleaned) return '';
+  return `0,125L | ${cleaned}`;
 }
 
+/** Setzt den Flaschen-String für die Datenbank zusammen. */
 export function composeWeinFlascheString(eurFlasche: string): string {
   return `FL. | ${stripEurAmount(eurFlasche)}`;
 }
 
-/** Liest gespeicherte Preis-Strings in Formularfelder (Glas-Größe + EUR-Teile) */
+/** Liest gespeicherte Preis-Strings in Formularfelder (Glas-Größe + EUR-Teile). */
 export function parseWeinPrices(preis: string, preisFlasche: string): {
   glas: WeinGlasMl;
   eurGlas: string;
   eurFlasche: string;
 } {
-  const g1 = preis.match(/0,1L\s*\|\s*(.+)/i);
-  const g2 = preis.match(/0,2L\s*\|\s*(.+)/i);
-  let glas: WeinGlasMl = '0,2';
-  let eurGlas = '';
-  if (g1) {
-    glas = '0,1';
-    eurGlas = g1[1].trim().replace(/\s*€\s*$/u, '').trim();
-  } else if (g2) {
-    glas = '0,2';
-    eurGlas = g2[1].trim().replace(/\s*€\s*$/u, '').trim();
-  } else {
-    eurGlas = preis.replace(/\s*€\s*$/u, '').trim();
-  }
+  const g = preis.match(/(0,1L|0,2L|0,125L)\s*\|\s*(.+)/i);
+  const eurGlas = g ? stripEurAmount(g[2]) : stripEurAmount(preis);
   const fb = (preisFlasche || '').match(/FL\.\s*\|\s*(.+)/i);
-  let eurFlasche = fb
-    ? fb[1].trim().replace(/\s*€\s*$/u, '').trim()
-    : (preisFlasche || '').replace(/^FL\.\s*/i, '').replace(/\s*€\s*$/u, '').trim();
-  return { glas, eurGlas, eurFlasche };
+  const eurFlasche = fb ? stripEurAmount(fb[1]) : stripEurAmount(preisFlasche || '');
+  return { glas: '0,125', eurGlas, eurFlasche };
 }
 
 export interface MenuItem {
