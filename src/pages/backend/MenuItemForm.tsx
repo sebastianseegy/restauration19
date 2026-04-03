@@ -52,7 +52,6 @@ export default function MenuItemForm() {
     customWeinKategorien: [],
   });
 
-  // Festgelegt auf 0,125 l (Konstante statt State, da keine Auswahl mehr nötig)
   const weinGlas: WeinGlasMl = '0,125' as any; 
   const [eurGlas, setEurGlas] = useState('');
   const [eurFlasche, setEurFlasche] = useState('');
@@ -68,7 +67,6 @@ export default function MenuItemForm() {
 
   const syncWeinFromStrings = useCallback((preis: string, flasche: string) => {
     const p = parseWeinPrices(preis || '', flasche || '');
-    // setWeinGlas(p.glas); // ENTFERNT, da weinGlas jetzt fest ist
     setEurGlas(p.eurGlas);
     setEurFlasche(p.eurFlasche);
   }, []);
@@ -99,19 +97,12 @@ export default function MenuItemForm() {
             if (typ === 'Wein') {
               const rawP = d.Preis || '';
               const rawF = d.Preis_Flasche || '';
-              const parsed = parseWeinPrices(rawP, rawF);
-              // #region agent log
-              fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H1',location:'MenuItemForm.tsx:wein-load',message:'Wein doc parse',data:{id,rawPreisLen:rawP.length,rawFlascheLen:rawF.length,parsedEurGlas:parsed.eurGlas,parsedEurFlasche:parsed.eurFlasche},timestamp:Date.now()})}).catch(()=>{});
-              // #endregion
               syncWeinFromStrings(rawP, rawF);
             }
           }
         }
       } finally {
         if (!cancelled) {
-          // #region agent log
-          fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H2',location:'MenuItemForm.tsx:load-finally',message:'load finished',data:{isNew,loadId:id,cancelled},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
           setLoading(false);
         }
       }
@@ -149,12 +140,10 @@ export default function MenuItemForm() {
     let preisFlasche = form.Preis_Flasche || '';
 
     if (form.Typ === 'Wein') {
-      // Nur Flaschenpreis ist zwingend erforderlich
       if (!eurFlasche.trim()) {
         setError('Der Preis für die Flasche ist erforderlich.');
         return;
       }
-      // Glas-Preis wird nur generiert, wenn das Feld ausgefüllt wurde
       preis = eurGlas.trim() ? composeWeinPreisString(eurGlas) : '';
       preisFlasche = composeWeinFlascheString(eurFlasche);
     } else {
@@ -170,10 +159,7 @@ export default function MenuItemForm() {
     try {
       const now = new Date().toISOString();
       const docId = isNew ? `${Date.now()}` : id!;
-      // #region agent log
-      const opts = mergeCategoryOptions(form.Typ, menuMeta, form.Kategorie);
-      fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H5',location:'MenuItemForm.tsx:submit-inputs',message:'submit computed prices',data:{typ:form.Typ,eurGlas,eurFlasche,preis,preisFlasche,formPreis:form.Preis,h4Kategorie:form.Kategorie,h4InOptions:opts.includes(form.Kategorie)},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
+      
       const data: MenuItem = {
         id: docId,
         ...form,
@@ -183,10 +169,6 @@ export default function MenuItemForm() {
         updatedAt: now,
         createdAt: isNew ? now : (await getDoc(doc(db, 'menuItems', docId))).data()?.createdAt || now,
       };
-      // #region agent log
-      const undefKeys = Object.entries(data as unknown as Record<string, unknown>).filter(([, v]) => v === undefined).map(([k]) => k);
-      fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H3',location:'MenuItemForm.tsx:submit-data',message:'payload before write',data:{docId,isNew,undefKeys,keys:Object.keys(data)},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
 
       if (isNew) {
         await setDoc(doc(db, 'menuItems', docId), data);
@@ -195,10 +177,6 @@ export default function MenuItemForm() {
       }
       navigate('/backend/menu');
     } catch (err) {
-      // #region agent log
-      const e = err as { code?: string; message?: string };
-      fetch('http://127.0.0.1:7711/ingest/62dceb90-f7b3-4b26-8b77-f2b6f88b9abe',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'5beee5'},body:JSON.stringify({sessionId:'5beee5',runId:'pre-fix',hypothesisId:'H3',location:'MenuItemForm.tsx:submit-catch',message:'save failed',data:{code:e?.code,msg:e?.message},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       setError('Fehler beim Speichern. Bitte erneut versuchen.');
       console.error(err);
     } finally {
@@ -235,7 +213,6 @@ export default function MenuItemForm() {
         </h1>
       </div>
 
-      {/* Typ */}
       <div className="flex flex-col gap-2">
         <label className="text-xs font-medium text-gray-700 tracking-wide">TYP</label>
         <div className="flex gap-2">
@@ -256,7 +233,6 @@ export default function MenuItemForm() {
         </div>
       </div>
 
-      {/* Kategorie */}
       <div className="flex flex-col gap-2">
         <label className="text-xs font-medium text-gray-700 tracking-wide">KATEGORIE</label>
         <select
@@ -272,7 +248,6 @@ export default function MenuItemForm() {
         </select>
       </div>
 
-      {/* Titel */}
       <div className="flex flex-col gap-2">
         <label className="text-xs font-medium text-gray-700 tracking-wide">TITEL *</label>
         <input
@@ -283,7 +258,6 @@ export default function MenuItemForm() {
         />
       </div>
 
-      {/* Beschreibung */}
       <div className="flex flex-col gap-2">
         <label className="text-xs font-medium text-gray-700 tracking-wide">
           BESCHREIBUNG {form.Typ === 'Wein' ? '(Weingut, Herkunft)' : '(Optional)'}
@@ -296,7 +270,6 @@ export default function MenuItemForm() {
         />
       </div>
 
-      {/* Preis Speise */}
       {form.Typ === 'Speise' && (
         <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-gray-700 tracking-wide">PREIS *</label>
@@ -309,7 +282,6 @@ export default function MenuItemForm() {
         </div>
       )}
 
-      {/* Preis Wein */}
       {form.Typ === 'Wein' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-2">
@@ -334,7 +306,6 @@ export default function MenuItemForm() {
         </div>
       )}
 
-      {/* Active toggle */}
       <div className="flex items-center gap-4 flex-wrap">
         <span className={`text-xs tracking-widest w-16 text-right ${!form.isActive ? 'text-gray-900 font-medium' : 'text-gray-300'}`}>
           INAKTIV
@@ -353,7 +324,6 @@ export default function MenuItemForm() {
         </span>
       </div>
 
-      {/* Preview */}
       <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
         <p className="text-[10px] tracking-widest text-gray-400 mb-4">VORSCHAU</p>
         <div className="flex justify-between border-b border-gray-200 py-3 gap-4">
