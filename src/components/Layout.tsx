@@ -73,7 +73,7 @@ export default function Layout() {
           <div className="flex flex-col items-start text-left gap-1 text-xs tracking-widest">
             <p>RESTAURATION19</p>
             <a 
-              href="https://maps.google.com/?q=Helmstraße+19,+90419+Nürnberg" 
+              href="https://maps.app.goo.gl/PrKx94yPGGLhfBpf6?g_st=ic" 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-brand-pink transition-colors"
