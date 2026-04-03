@@ -13,7 +13,7 @@ export default function Impressum() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">KONTAKT</p>
+        <p className="font-bold normal-case">Kontakt</p>
         <p className="normal-case">
           Telefon: 0911 25350782<br/>
           E-Mail: <a href="mailto:info@restauration19.de" className="hover:text-brand-pink transition-colors">info@restauration19.de</a>
@@ -21,17 +21,17 @@ export default function Impressum() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">VERTRETUNGSBERECHTIGTE GESELLSCHAFTER</p>
+        <p className="font-bold normal-case">Vertretungsberechtigte Gesellschafter</p>
         <p className="normal-case">Florian Hermanns, Krispin Rützel</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">UMSATZSTEUER-IDENTIFIKATIONSNUMMER GEMÄSS §27 A UMSATZSTEUERGESETZ</p>
+        <p className="font-bold normal-case">Umsatzsteuer-Identifikationsnummer gemäß §27 a Umsatzsteuergesetz</p>
         <p className="normal-case">DE 461 020 856</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">ZUSTÄNDIGE AUFSICHTSBEHÖRDE</p>
+        <p className="font-bold normal-case">Zuständige Aufsichtsbehörde</p>
         <p className="normal-case">
           Ordnungsamt Nürnberg<br/>
           Innerer Laufer Platz 3<br/>
@@ -43,12 +43,12 @@ export default function Impressum() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">VERBRAUCHERSTREITBEILEGUNG/­UNIVERSALSCHLICHTUNGSSTELLE</p>
+        <p className="font-bold normal-case">Verbraucherstreitbeilegung/Universalschlichtungsstelle</p>
         <p className="normal-case">Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">EU-STREITSCHLICHTUNG</p>
+        <p className="font-bold normal-case">EU-Streitschlichtung</p>
         <p className="normal-case">
           Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:{' '}
           <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="hover:text-brand-pink transition-colors break-all">
@@ -58,12 +58,12 @@ export default function Impressum() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">QUELLENANGABEN FÜR DIE VERWENDETEN BILDER</p>
+        <p className="font-bold normal-case">Quellenangaben für die verwendeten Bilder</p>
         <p className="normal-case">Quirin Staufer</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">HAFTUNG FÜR INHALTE</p>
+        <p className="font-bold normal-case">Haftung für Inhalte</p>
         <div className="normal-case flex flex-col gap-2">
           <p>Als Diensteanbieter sind wir gemäß § 7 Abs.1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
           <p>Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.</p>
@@ -71,7 +71,7 @@ export default function Impressum() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">HAFTUNG FÜR LINKS</p>
+        <p className="font-bold normal-case">Haftung für Links</p>
         <div className="normal-case flex flex-col gap-2">
           <p>Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.</p>
           <p>Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
@@ -79,7 +79,7 @@ export default function Impressum() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="font-bold">URHEBERRECHT</p>
+        <p className="font-bold normal-case">Urheberrecht</p>
         <div className="normal-case flex flex-col gap-2">
           <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.</p>
           <p>Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.</p>
