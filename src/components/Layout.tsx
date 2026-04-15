@@ -1,9 +1,15 @@
-import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { applyPublicPageSeo } from '../lib/publicSeo';
 
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    applyPublicPageSeo(pathname);
+  }, [pathname]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -19,7 +25,7 @@ export default function Layout() {
           <img 
             src="/logo.png" 
             alt="RESTAURATION19 Logo" 
-            className="h-10 md:h-14 w-auto"
+            className="block h-10 md:h-14 w-auto"
           />
         </Link>
 

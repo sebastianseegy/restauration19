@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import NoIndexHead from '../../components/NoIndexHead';
 
 const navItems = [
   { to: '/backend/dashboard', label: 'ÜBERSICHT' },
@@ -18,6 +19,7 @@ export default function BackendLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      <NoIndexHead />
       {/* Sidebar */}
       <aside className="w-56 bg-white border-r border-gray-100 flex flex-col fixed top-0 bottom-0">
         <div className="p-6 border-b border-gray-100">

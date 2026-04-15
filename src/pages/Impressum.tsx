@@ -27,7 +27,7 @@ export default function Impressum() {
 
       <div className="flex flex-col gap-2">
         <p className="font-bold normal-case">Umsatzsteuer-Identifikationsnummer gemäß §27 a Umsatzsteuergesetz</p>
-        <p className="normal-case">DE 461 020 856</p>
+        <p className="normal-case">DE461020856</p>
       </div>
 
       <div className="flex flex-col gap-2">

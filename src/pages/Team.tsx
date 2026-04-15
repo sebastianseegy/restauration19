@@ -28,11 +28,11 @@ export default function Team() {
           style={{ y }}
           className="flex flex-col items-center gap-3 md:gap-8"
         >
-          <div className="w-2/3 md:w-full aspect-[3/4] shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
+          <div className="w-2/3 md:w-full aspect-[3/4] overflow-hidden shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
             <img 
               src="/photos/team/team-flo.jpg" 
               alt="Flo" 
-              className="w-full h-full object-cover"
+              className="block w-full h-full object-cover"
             />
           </div>
           <div className="flex flex-col items-center text-xs md:text-sm leading-relaxed gap-1 md:gap-2 text-center">
@@ -51,11 +51,11 @@ export default function Team() {
           style={{ y }}
           className="flex flex-col items-center gap-3 md:gap-8"
         >
-          <div className="w-2/3 md:w-full aspect-[3/4] shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
+          <div className="w-2/3 md:w-full aspect-[3/4] overflow-hidden shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
             <img 
               src="/photos/team/team-krispin.jpg" 
               alt="Krispin" 
-              className="w-full h-full object-cover"
+              className="block w-full h-full object-cover"
             />
           </div>
           <div className="flex flex-col items-center text-xs md:text-sm leading-relaxed gap-1 md:gap-2 text-center">
@@ -74,17 +74,17 @@ export default function Team() {
           style={{ y }}
           className="flex flex-col items-center gap-3 md:gap-8"
         >
-          <div className="w-2/3 md:w-full aspect-[3/4] shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
+          <div className="w-2/3 md:w-full aspect-[3/4] overflow-hidden shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
             <img 
               src="/photos/team/team-pascal.jpg" 
               alt="Pascal" 
-              className="w-full h-full object-cover"
+              className="block w-full h-full object-cover"
             />
           </div>
           <div className="flex flex-col items-center text-xs md:text-sm leading-relaxed gap-1 md:gap-2 text-center">
             <h3 className="text-sm md:text-xl mb-1 md:mb-2 font-medium">PASCAL</h3>
             <p>POSITION: BEGEISTERTER KOCH, MANN FÜR ALLE FÄLLE</p>
-            <p>FAIBLE FÜR: SIEBTRÄGERMASCHINEN UND RENNRÄDER</p>
+            <p>FAIBLE FÜR: BRETTSPIELE UND UNFREIWILLIGEN ASPHALT-KONTAKT</p>
             <p>VERSTECKTES TALENT: BRAUCHT KEINE LEITER</p>
           </div>
         </motion.div>

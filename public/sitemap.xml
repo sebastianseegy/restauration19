@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.restauration19.de/</loc>
+    <loc>https://restauration19.de/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.restauration19.de/genuss</loc>
+    <loc>https://restauration19.de/genuss</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.restauration19.de/events</loc>
+    <loc>https://restauration19.de/events</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.restauration19.de/team</loc>
+    <loc>https://restauration19.de/team</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.restauration19.de/impressum</loc>
+    <loc>https://restauration19.de/impressum</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://www.restauration19.de/datenschutz</loc>
+    <loc>https://restauration19.de/datenschutz</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://www.restauration19.de/agb</loc>
+    <loc>https://restauration19.de/agb</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
