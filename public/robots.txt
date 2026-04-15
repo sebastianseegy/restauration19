@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /backend/
 
-Sitemap: https://restauration19.de/sitemap.xml
+Sitemap: https://www.restauration19.de/sitemap.xml

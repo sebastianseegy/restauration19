@@ -1,7 +1,6 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import NoIndexHead from '../../components/NoIndexHead';
 
 export default function Login() {
   const { login, user } = useAuth();
@@ -15,7 +14,7 @@ export default function Login() {
     return <Navigate to="/backend/dashboard" replace />;
   }
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -31,7 +30,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <NoIndexHead />
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
           <img src="/logo.png" alt="Restauration19" className="h-10 mx-auto mb-6 opacity-80" />

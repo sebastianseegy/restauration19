@@ -25,11 +25,11 @@ export function ParallaxImageGroup({ images }: { images: ImageProps[] }) {
             style={{ y }}
             className="w-[47%] md:w-auto md:flex-1 md:max-w-md"
           >
-            <div className="relative w-full aspect-[3/4] overflow-hidden shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
+            <div className="relative w-full aspect-[3/4] shadow-[0_8px_30px_rgb(94,116,97,0.2)]">
               <img 
                 src={img.src} 
                 alt={img.alt} 
-                className="block w-full h-full object-cover"
+                className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
             </div>

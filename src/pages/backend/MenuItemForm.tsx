@@ -324,7 +324,7 @@ export default function MenuItemForm() {
         </span>
       </div>
 
-      <div className="rounded-xl p-6 bg-[#f4f6f4] ring-1 ring-brand-green/15">
+      <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
         <p className="text-[10px] tracking-widest text-gray-400 mb-4">VORSCHAU</p>
         <div className="flex justify-between border-b border-gray-200 py-3 gap-4">
           <div className="flex flex-col items-start text-left flex-1 min-w-0">

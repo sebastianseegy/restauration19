@@ -45,7 +45,7 @@ export default function Genuss() {
         <h2 className="text-2xl md:text-3xl mb-8 text-center">AKTUELLE KARTE</h2>
         
         {/* Große Darstellung der Menükarte mit leichtem Schattenrahmen in grün */}
-        <div className="w-full max-w-3xl bg-[#f4f6f4] p-8 md:p-16 shadow-[0_8px_40px_rgb(94,116,97,0.25)] ring-1 ring-brand-green/15">
+        <div className="w-full max-w-3xl bg-white p-8 md:p-16 shadow-[0_8px_40px_rgb(94,116,97,0.25)] border border-brand-green/10">
           {speisen.length === 0 ? (
             <p className="text-sm text-gray-400 tracking-widest text-center">AKTUELLE KARTE FOLGT IN KÜRZE</p>
           ) : (
@@ -73,7 +73,7 @@ export default function Genuss() {
         <h2 className="text-2xl md:text-3xl mb-8 text-center">AKTUELLE WEINAUSWAHL</h2>
         
         {/* Große Darstellung der Weinkarte mit leichtem Schattenrahmen in grün */}
-        <div className="w-full max-w-3xl bg-[#f4f6f4] p-8 md:p-16 shadow-[0_8px_40px_rgb(94,116,97,0.25)] ring-1 ring-brand-green/15">
+        <div className="w-full max-w-3xl bg-white p-8 md:p-16 shadow-[0_8px_40px_rgb(94,116,97,0.25)] border border-brand-green/10">
           {weine.length === 0 ? (
             <p className="text-sm text-gray-400 tracking-widest text-center">AKTUELLE WEINAUSWAHL FOLGT IN KÜRZE</p>
           ) : (
