@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import {
   MenuItem,
   SPEISE_KATEGORIEN,
+  compareMenuItemSortInCategory,
   displaySpeisePreis,
   displayWeinFlascheLine,
   displayWeinPreisLine,
@@ -31,9 +32,9 @@ export default function Genuss() {
 
   /** Standard-Reihenfolge + evtl. ältere Kategorien aus Firestore (z. B. WARME GERICHTE) */
   const speisenKategorien = useMemo(() => {
-    const fromData = [...new Set(speisen.map(s => s.Kategorie))];
+    const fromData = [...new Set(speisen.map(s => String(s.Kategorie || '')))] as string[];
     const known = SPEISE_KATEGORIEN as readonly string[];
-    const extra = fromData.filter(k => !known.includes(k));
+    const extra = fromData.filter((k): k is string => Boolean(k) && !known.includes(k));
     extra.sort((a, b) => a.localeCompare(b, 'de'));
     return [...SPEISE_KATEGORIEN, ...extra];
   }, [speisen]);
@@ -59,13 +60,15 @@ export default function Genuss() {
           ) : (
             <div className="flex flex-col gap-12 text-sm md:text-base">
               {speisenKategorien.map((kategorie) => {
-                const katItems = speisen.filter(s => s.Kategorie === kategorie);
+                const katItems = speisen
+                  .filter(s => s.Kategorie === kategorie)
+                  .sort(compareMenuItemSortInCategory);
                 if (katItems.length === 0) return null;
                 return (
                 <div key={kategorie}>
                   <h3 className="text-xl mb-6 text-brand-green uppercase">{kategorie}</h3>
-                  {katItems.map((item, index) => (
-                    <div key={index} className="flex justify-between border-b border-gray-200 py-4 gap-4">
+                  {katItems.map((item) => (
+                    <div key={item.id} className="flex justify-between border-b border-gray-200 py-4 gap-4">
                       <div className="flex flex-col items-start text-left flex-1">
                         <span className="uppercase">{item.Titel}</span>
                         {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
@@ -91,13 +94,15 @@ export default function Genuss() {
           ) : (
             <div className="flex flex-col gap-12 text-sm md:text-base">
               {weinKategorien.map((kategorie) => {
-                const katItems = weine.filter(w => w.Kategorie === kategorie);
+                const katItems = weine
+                  .filter(w => w.Kategorie === kategorie)
+                  .sort(compareMenuItemSortInCategory);
                 if (katItems.length === 0) return null;
                 return (
                 <div key={kategorie}>
                   <h3 className="text-xl mb-6 text-brand-green uppercase">{kategorie}</h3>
-                  {katItems.map((item, index) => (
-                    <div key={index} className="flex justify-between border-b border-gray-200 py-4 gap-4">
+                  {katItems.map((item) => (
+                    <div key={item.id} className="flex justify-between border-b border-gray-200 py-4 gap-4">
                       <div className="flex flex-col items-start text-left flex-1">
                         <span className="uppercase">{item.Titel}</span>
                         {item.Beschreibung && <span className="text-xs text-gray-500 mt-1 uppercase text-left">{item.Beschreibung}</span>}
