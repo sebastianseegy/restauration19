@@ -1,0 +1,10 @@
+---
+description: Keine öffentlichen Frontend-Änderungen ohne ausdrückliche Freigabe des Nutzers.
+alwaysApply: true
+---
+
+# Öffentliches Frontend — nur nach explizitem „Ja“
+
+- Ändere **nichts** am sichtbaren Auftritt der Website (öffentliche Seiten unter `src/pages/*.tsx` außerhalb von `src/pages/backend/`, `src/components/`, `index.html`, `src/index.css`, `public/` Assets wie Bilder/Favicons), **es sei denn**, der Nutzer hat **ausdrücklich** bestätigt, dass genau diese Frontend-Änderung gewünscht ist (z. B. konkret: „Ja, ändere das Layout / die Farben / die Genuss-Seite …“).
+- Ausnahmen: reine **Backend**-Routen unter `src/pages/backend/**`, Konfiguration ohne UI (`firebase.json`, Env), oder wenn der Nutzer **nur** Meta/Favicon/Sitemap/robots anfragt — dann **ausschließlich** diese Dateien anfassen, kein Styling oder Layout der öffentlichen Seiten.
+- Bei Unklarheit: **nachfragen**, nicht improvisieren.

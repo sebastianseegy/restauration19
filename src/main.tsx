@@ -8,7 +8,7 @@ if (
   window.location.hostname === 'restauration19-fde4f.web.app' || 
   window.location.hostname === 'restauration19-fde4f.firebaseapp.com'
 ) {
-  window.location.replace(`https://www.restauration19.de${window.location.pathname}${window.location.search}`);
+  window.location.replace(`https://restauration19.de${window.location.pathname}${window.location.search}`);
 }
 
 createRoot(document.getElementById('root')!).render(

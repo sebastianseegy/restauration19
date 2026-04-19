@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import {
   MenuItem,
+  SPEISE_KATEGORIEN,
   displaySpeisePreis,
   displayWeinFlascheLine,
   displayWeinPreisLine,
@@ -23,12 +24,19 @@ export default function Genuss() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Feste Kategorien — immer angezeigt, auch wenn keine aktiven Gerichte vorhanden
-  const speisenKategorien = ['KLEINIGKEITEN', 'WARME GERICHTE', 'SÜSSES'];
   const weinKategorien = ['SCHAUMWEIN', 'WEISSWEIN', 'ROTWEIN'];
 
   const speisen = menuItems.filter(item => item.Typ === 'Speise');
   const weine = menuItems.filter(item => item.Typ === 'Wein');
+
+  /** Standard-Reihenfolge + evtl. ältere Kategorien aus Firestore (z. B. WARME GERICHTE) */
+  const speisenKategorien = useMemo(() => {
+    const fromData = [...new Set(speisen.map(s => s.Kategorie))];
+    const known = SPEISE_KATEGORIEN as readonly string[];
+    const extra = fromData.filter(k => !known.includes(k));
+    extra.sort((a, b) => a.localeCompare(b, 'de'));
+    return [...SPEISE_KATEGORIEN, ...extra];
+  }, [speisen]);
 
   if (loading) {
     return (
@@ -50,10 +58,13 @@ export default function Genuss() {
             <p className="text-sm text-gray-400 tracking-widest text-center">AKTUELLE KARTE FOLGT IN KÜRZE</p>
           ) : (
             <div className="flex flex-col gap-12 text-sm md:text-base">
-              {speisenKategorien.map((kategorie) => (
+              {speisenKategorien.map((kategorie) => {
+                const katItems = speisen.filter(s => s.Kategorie === kategorie);
+                if (katItems.length === 0) return null;
+                return (
                 <div key={kategorie}>
                   <h3 className="text-xl mb-6 text-brand-green uppercase">{kategorie}</h3>
-                  {speisen.filter(s => s.Kategorie === kategorie).map((item, index) => (
+                  {katItems.map((item, index) => (
                     <div key={index} className="flex justify-between border-b border-gray-200 py-4 gap-4">
                       <div className="flex flex-col items-start text-left flex-1">
                         <span className="uppercase">{item.Titel}</span>
@@ -63,14 +74,15 @@ export default function Genuss() {
                     </div>
                   ))}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </section>
 
       <section className="max-w-4xl mx-auto w-full flex flex-col items-center">
-        <h2 className="text-2xl md:text-3xl mb-8 text-center">AKTUELLE WEINAUSWAHL</h2>
+        <h2 className="text-2xl md:text-3xl mb-8 text-center">BESONDERE WEINE</h2>
         
         {/* Große Darstellung der Weinkarte mit leichtem Schattenrahmen in grün */}
         <div className="w-full max-w-3xl bg-white p-8 md:p-16 shadow-[0_8px_40px_rgb(94,116,97,0.25)] border border-brand-green/10">
@@ -78,10 +90,13 @@ export default function Genuss() {
             <p className="text-sm text-gray-400 tracking-widest text-center">AKTUELLE WEINAUSWAHL FOLGT IN KÜRZE</p>
           ) : (
             <div className="flex flex-col gap-12 text-sm md:text-base">
-              {weinKategorien.map((kategorie) => (
+              {weinKategorien.map((kategorie) => {
+                const katItems = weine.filter(w => w.Kategorie === kategorie);
+                if (katItems.length === 0) return null;
+                return (
                 <div key={kategorie}>
                   <h3 className="text-xl mb-6 text-brand-green uppercase">{kategorie}</h3>
-                  {weine.filter(w => w.Kategorie === kategorie).map((item, index) => (
+                  {katItems.map((item, index) => (
                     <div key={index} className="flex justify-between border-b border-gray-200 py-4 gap-4">
                       <div className="flex flex-col items-start text-left flex-1">
                         <span className="uppercase">{item.Titel}</span>
@@ -104,7 +119,8 @@ export default function Genuss() {
                     </div>
                   ))}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

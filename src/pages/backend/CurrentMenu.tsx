@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
+import { collection, getDocs, doc, writeBatch } from 'firebase/firestore';
 import { db } from '../../firebase';
 import {
   MenuItem,
@@ -13,26 +13,65 @@ import { Link } from 'react-router-dom';
 
 export default function CurrentMenu() {
   const [items, setItems] = useState<MenuItem[]>([]);
+  const [draftActive, setDraftActive] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [saveBusy, setSaveBusy] = useState(false);
+
+  const effectiveActive = (item: MenuItem) =>
+    draftActive[item.id] !== undefined ? draftActive[item.id]! : item.isActive;
+
+  const hasUnsavedChanges = useMemo(
+    () => items.some(i => effectiveActive(i) !== i.isActive),
+    [items, draftActive]
+  );
 
   useEffect(() => {
     getDocs(collection(db, 'menuItems'))
       .then(snap => {
         const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as MenuItem[];
         setItems(data.filter(i => i.Typ && i.Titel));
+        setDraftActive({});
       })
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
   }, []);
 
-  const handleToggle = async (item: MenuItem) => {
-    await updateDoc(doc(db, 'menuItems', item.id), { isActive: !item.isActive });
-    setItems(prev => prev.map(i => i.id === item.id ? { ...i, isActive: !i.isActive } : i));
+  const toggleDraft = (item: MenuItem) => {
+    const cur = effectiveActive(item);
+    const next = !cur;
+    setDraftActive(prev => {
+      const p = { ...prev };
+      if (next === item.isActive) delete p[item.id];
+      else p[item.id] = next;
+      return p;
+    });
   };
 
-  const speisen = items.filter(i => i.Typ === 'Speise' && i.isActive);
-  const weine = items.filter(i => i.Typ === 'Wein' && i.isActive);
-  const inactive = items.filter(i => !i.isActive);
+  const handleSaveVisibility = async () => {
+    const changed = items.filter(i => effectiveActive(i) !== i.isActive);
+    if (changed.length === 0) return;
+    setSaveBusy(true);
+    try {
+      const batch = writeBatch(db);
+      changed.forEach(item => {
+        batch.update(doc(db, 'menuItems', item.id), { isActive: effectiveActive(item) });
+      });
+      await batch.commit();
+      setItems(prev =>
+        prev.map(i => {
+          const eff = effectiveActive(i);
+          return eff !== i.isActive ? { ...i, isActive: eff } : i;
+        })
+      );
+      setDraftActive({});
+    } finally {
+      setSaveBusy(false);
+    }
+  };
+
+  const speisen = items.filter(i => i.Typ === 'Speise' && effectiveActive(i));
+  const weine = items.filter(i => i.Typ === 'Wein' && effectiveActive(i));
+  const inactive = items.filter(i => !effectiveActive(i));
 
   const speisenKats = Array.from(new Set([...SPEISE_KATEGORIEN, ...speisen.map(i => i.Kategorie)]));
   const weinKats = Array.from(new Set([...WEIN_KATEGORIEN, ...weine.map(i => i.Kategorie)]));
@@ -45,22 +84,57 @@ export default function CurrentMenu() {
 
   return (
     <div className="flex flex-col gap-8 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xs tracking-widest text-gray-400 mb-1">AKTUELLE KARTE</h1>
           <p className="text-sm text-gray-500">{speisen.length} Speisen · {weine.length} Weine aktiv</p>
         </div>
-        <Link to="/backend/menu/new"
-          className="bg-gray-900 text-white text-xs tracking-widest px-5 py-2.5 rounded-lg hover:bg-gray-700 transition-colors">
-          + HINZUFÜGEN
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled={!hasUnsavedChanges || saveBusy}
+            onClick={handleSaveVisibility}
+            className={`text-xs tracking-widest px-5 py-2.5 rounded-lg transition-colors ${
+              hasUnsavedChanges
+                ? 'bg-gray-900 text-white hover:bg-gray-700'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            SPEICHERN
+          </button>
+          <button
+            type="button"
+            disabled={!hasUnsavedChanges || saveBusy}
+            onClick={() => setDraftActive({})}
+            className={`text-xs tracking-widest px-4 py-2.5 rounded-lg border transition-colors ${
+              hasUnsavedChanges
+                ? 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                : 'border-gray-200 text-gray-300 cursor-not-allowed'
+            }`}
+          >
+            VERWERFEN
+          </button>
+          <Link to="/backend/menu/new"
+            className="bg-gray-900 text-white text-xs tracking-widest px-5 py-2.5 rounded-lg hover:bg-gray-700 transition-colors">
+            + HINZUFÜGEN
+          </Link>
+        </div>
       </div>
 
+      {/* Infozeile — immer reserviert, nur sichtbar bei Änderungen (kein Layout-Shift) */}
+      <p className={`text-xs rounded-lg px-4 py-2 border transition-all ${
+        hasUnsavedChanges
+          ? 'text-amber-800 bg-amber-50 border-amber-200'
+          : 'text-transparent bg-transparent border-transparent select-none pointer-events-none'
+      }`}>
+        Sichtbarkeit geändert — <strong>SPEICHERN</strong>, damit die Genuss-Seite aktualisiert wird.
+      </p>
+
       {/* Speisekarte preview */}
-      <MenuSection title="SPEISEKARTE" kategorien={speisenKats} items={speisen} onToggle={handleToggle} />
+      <MenuSection title="SPEISEKARTE" kategorien={speisenKats} items={speisen} onToggle={toggleDraft} />
 
       {/* Weinkarte preview */}
-      <MenuSection title="WEINAUSWAHL" kategorien={weinKats} items={weine} onToggle={handleToggle} isWein />
+      <MenuSection title="WEINAUSWAHL" kategorien={weinKats} items={weine} onToggle={toggleDraft} isWein />
 
       {/* Inactive items */}
       {inactive.length > 0 && (
@@ -87,7 +161,7 @@ export default function CurrentMenu() {
                     </span>
                   )}
                 </p>
-                <button onClick={() => handleToggle(item)}
+                <button onClick={() => toggleDraft(item)}
                   className="text-[10px] tracking-widest px-3 py-1.5 rounded-lg bg-gray-50 text-gray-400 hover:bg-green-50 hover:text-green-700 transition-colors flex-shrink-0">
                   AKTIVIEREN
                 </button>

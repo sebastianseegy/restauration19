@@ -1,9 +1,15 @@
-import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { applySeoForPath } from '../lib/seoHead';
 
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    applySeoForPath(pathname);
+  }, [pathname]);
 
   return (
     <div className="min-h-screen flex flex-col">
