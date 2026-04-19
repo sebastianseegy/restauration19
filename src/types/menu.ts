@@ -2,7 +2,14 @@ export type MenuTyp = 'Speise' | 'Wein';
 
 export type WeinGlasMl = '0,125'; // Festgelegt auf 0,125L
 
-export const SPEISE_KATEGORIEN = ['KLEINIGKEITEN', 'WARME GERICHTE', 'SÜSSES'];
+/** Reihenfolge = Darstellung auf Genuss / Sortierung im Backend */
+export const SPEISE_KATEGORIEN = [
+  'KLEINIGKEITEN',
+  'VORSPEISEN',
+  'WARME VORSPEISEN',
+  'HAUPTSPEISEN',
+  'SÜSSES',
+] as const;
 export const WEIN_KATEGORIEN = ['SCHAUMWEIN', 'WEISSWEIN', 'ROTWEIN'];
 
 /** Formatiert z. B. "7,50" → "7,50 €" wenn noch kein € */

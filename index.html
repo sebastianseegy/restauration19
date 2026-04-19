@@ -7,18 +7,31 @@
     <title>RESTAURATION19 Nürnberg | Restaurant & Weinbar in St. Johannis</title>
     
    <meta name="robots" content="index, follow, max-image-preview:large" />
-<meta property="og:image" content="https://www.restauration19.de/og-image.jpg" />
     
-    <meta name="description" content="Restauration19 Nürnberg: Restaurant im Bistrostil – ehrlich, einfach und geschmackvoll. Dazu eine besondere Weinauswahl und eine Atmosphäre, in der man sich wohlfühlt. Helmstraße 19." />
+    <meta name="description" content="Restaurant im Bistrostil – ehrlich, einfach und geschmackvoll. Dazu eine besondere Weinauswahl und eine Atmosphäre, in der man sich wohlfühlt. Helmstraße 19." />
     <meta name="keywords" content="Restaurant, St. Johannis, Nürnberg, Bistro, Weinbar, Genuss, genießen, saisonale Küche, regionale Küche" />
-    <link rel="canonical" href="https://www.restauration19.de/" />
+    <link rel="canonical" href="https://restauration19.de/" />
 
     <meta property="og:type" content="restaurant.restaurant" />
-<meta property="og:url" content="https://www.restauration19.de/" />
+<meta property="og:url" content="https://restauration19.de/" />
+    <script>
+      (function () {
+        var h = location.hostname;
+        if (h !== 'restauration19.de' && h !== 'www.restauration19.de') return;
+        var origin = 'https://restauration19.de';
+        var path = location.pathname || '/';
+        path = path.replace(/\/+$/, '') || '/';
+        var url = path === '/' ? origin + '/' : origin + path;
+        var link = document.querySelector('link[rel="canonical"]');
+        if (link) link.setAttribute('href', url);
+        var og = document.querySelector('meta[property="og:url"]');
+        if (og) og.setAttribute('content', url);
+      })();
+    </script>
 <meta property="og:title" content="RESTAURATION19 – Genussküche & Weinbar in Nürnberg" />
 <meta property="og:description" content="Restaurant im Bistrostil – ehrlich, einfach und geschmackvoll. Dazu eine besondere Weinauswahl und eine Atmosphäre, in der man sich wohlfühlt. Helmstraße 19." />
-<meta property="og:image" content="https://www.restauration19.de/og-image.jpg" />
-<meta property="og:image:secure_url" content="https://www.restauration19.de/og-image.jpg" />
+<meta property="og:image" content="https://restauration19.de/og-image.jpg" />
+<meta property="og:image:secure_url" content="https://restauration19.de/og-image.jpg" />
 <meta property="og:image:type" content="image/jpeg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -28,11 +41,13 @@
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="RESTAURATION19 Nürnberg" />
-    <meta name="twitter:description" content="Restaurant im Bistrostil – ehrlich, einfach und geschmackvoll." />
-    <meta name="twitter:image" content="https://www.restauration19.de/og-image.jpg" />
+    <meta name="twitter:description" content="Restaurant im Bistrostil – ehrlich, einfach und geschmackvoll. Dazu eine besondere Weinauswahl und eine Atmosphäre, in der man sich wohlfühlt. Helmstraße 19." />
+    <meta name="twitter:image" content="https://restauration19.de/og-image.jpg" />
 
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon-apple.png" />
 
     <script type="application/ld+json">
     {
@@ -40,14 +55,14 @@
       "@type": "Restaurant",
       "name": "Restauration19",
       "alternateName": "Restauration 19 Nürnberg Johannis",
-      "description": "Restaurant im Bistrostil – ehrlich, einfach und geschmackvoll. Dazu eine besondere Weinauswahl und eine Atmosphäre, in der man sich wohlfühlt.",
-      "url": "https://www.restauration19.de",
-      "logo": "https://www.restauration19.de/favicon.png",
+      "description": "Restaurant im Bistrostil – ehrlich, einfach und geschmackvoll. Dazu eine besondere Weinauswahl und eine Atmosphäre, in der man sich wohlfühlt. Helmstraße 19.",
+      "url": "https://restauration19.de",
+      "logo": "https://restauration19.de/favicon.png",
       "image": [
-        "https://www.restauration19.de/og-image.jpg",
-        "https://www.restauration19.de/photos/home/home-1.jpg"
+        "https://restauration19.de/og-image.jpg",
+        "https://restauration19.de/photos/home/home-1.jpg"
       ],
-      "menu": "https://www.restauration19.de/genuss",
+      "menu": "https://restauration19.de/genuss",
       "telephone": "+4991125350782",
       "email": "info@restauration19.de",
       "priceRange": "€€€",

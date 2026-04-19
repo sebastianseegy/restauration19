@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { collection, getDocs, deleteDoc, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
+import { collection, getDocs, deleteDoc, doc, writeBatch } from 'firebase/firestore';
 import { db } from '../../firebase';
 import {
   MenuItem,
@@ -12,9 +12,19 @@ import { Link } from 'react-router-dom';
 
 export default function MenuItems() {
   const [items, setItems] = useState<MenuItem[]>([]);
+  /** Lokale Überschreibungen für „auf Karte“ — erst nach SPEICHERN in Firestore / auf Genuss sichtbar */
+  const [draftActive, setDraftActive] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'Speise' | 'Wein'>('all');
   const [bulkBusy, setBulkBusy] = useState(false);
+
+  const effectiveActive = (item: MenuItem) =>
+    draftActive[item.id] !== undefined ? draftActive[item.id]! : item.isActive;
+
+  const hasUnsavedChanges = useMemo(
+    () => items.some(i => effectiveActive(i) !== i.isActive),
+    [items, draftActive]
+  );
 
   const fetchItems = async () => {
     try {
@@ -28,6 +38,7 @@ export default function MenuItems() {
           (a.Titel || '').localeCompare(b.Titel || '', 'de')
       );
       setItems(valid);
+      setDraftActive({});
     } catch {
       setItems([]);
     } finally {
@@ -45,28 +56,54 @@ export default function MenuItems() {
     setItems(prev => prev.filter(i => i.id !== id));
   };
 
-  const handleToggle = async (item: MenuItem) => {
-    await updateDoc(doc(db, 'menuItems', item.id), { isActive: !item.isActive });
-    setItems(prev => prev.map(i => (i.id === item.id ? { ...i, isActive: !i.isActive } : i)));
+  const toggleDraft = (item: MenuItem) => {
+    const cur = effectiveActive(item);
+    const next = !cur;
+    setDraftActive(prev => {
+      const p = { ...prev };
+      if (next === item.isActive) delete p[item.id];
+      else p[item.id] = next;
+      return p;
+    });
   };
 
-  const filtered = filter === 'all' ? items : items.filter(i => i.Typ === filter);
-
-  const setAllFilteredActive = async (active: boolean) => {
-    if (filtered.length === 0) return;
+  const handleSaveVisibility = async () => {
+    const changed = items.filter(i => effectiveActive(i) !== i.isActive);
+    if (changed.length === 0) return;
     setBulkBusy(true);
     try {
       const batch = writeBatch(db);
-      filtered.forEach(item => {
-        batch.update(doc(db, 'menuItems', item.id), { isActive: active });
+      changed.forEach(item => {
+        batch.update(doc(db, 'menuItems', item.id), { isActive: effectiveActive(item) });
       });
       await batch.commit();
       setItems(prev =>
-        prev.map(i => (filtered.some(f => f.id === i.id) ? { ...i, isActive: active } : i))
+        prev.map(i => {
+          const eff = effectiveActive(i);
+          return eff !== i.isActive ? { ...i, isActive: eff } : i;
+        })
       );
+      setDraftActive({});
     } finally {
       setBulkBusy(false);
     }
+  };
+
+  const discardDraft = () => setDraftActive({});
+
+  const filtered = filter === 'all' ? items : items.filter(i => i.Typ === filter);
+
+  /** Setzt nur den Entwurf (Sichtbarkeit), ohne zu speichern */
+  const setAllFilteredDraft = (active: boolean) => {
+    if (filtered.length === 0) return;
+    setDraftActive(prev => {
+      const p = { ...prev };
+      filtered.forEach(item => {
+        if (active === item.isActive) delete p[item.id];
+        else p[item.id] = active;
+      });
+      return p;
+    });
   };
 
   return (
@@ -76,7 +113,7 @@ export default function MenuItems() {
           <h1 className="text-xs tracking-widest text-gray-400 mb-1">SPEISEKARTE</h1>
           <p className="text-sm text-gray-500">{items.length} Einträge</p>
         </div>
-        <div className="flex flex-wrap gap-2 justify-end">
+        <div className="flex flex-wrap gap-2 justify-end items-center">
           <Link
             to="/backend/menu/new"
             className="bg-gray-900 text-white text-xs tracking-widest px-5 py-2.5 rounded-lg hover:bg-gray-700 transition-colors inline-flex items-center"
@@ -85,6 +122,15 @@ export default function MenuItems() {
           </Link>
         </div>
       </div>
+
+      {/* Infozeile — immer reserviert, kein Layout-Shift */}
+      <p className={`text-xs rounded-lg px-4 py-2 border transition-all ${
+        hasUnsavedChanges
+          ? 'text-amber-800 bg-amber-50 border-amber-200'
+          : 'text-transparent bg-transparent border-transparent select-none pointer-events-none'
+      }`}>
+        Ungespeicherte Änderungen — <strong>SPEICHERN</strong>, damit die Karte öffentlich aktualisiert wird.
+      </p>
 
       <div className="flex flex-wrap gap-2 items-center">
         {(['all', 'Speise', 'Wein'] as const).map(f => (
@@ -101,11 +147,11 @@ export default function MenuItems() {
           </button>
         ))}
         {filtered.length > 0 && (
-          <div className="flex gap-2 ml-auto flex-wrap">
+          <div className="flex gap-2 ml-auto flex-wrap items-center">
             <button
               type="button"
               disabled={bulkBusy}
-              onClick={() => setAllFilteredActive(true)}
+              onClick={() => setAllFilteredDraft(true)}
               className="text-xs tracking-widest px-3 py-2 rounded-lg border border-green-200 text-green-800 bg-green-50 hover:bg-green-100 disabled:opacity-50"
             >
               ALLE ANZEIGEN ({filter === 'all' ? 'alle' : filter})
@@ -113,10 +159,34 @@ export default function MenuItems() {
             <button
               type="button"
               disabled={bulkBusy}
-              onClick={() => setAllFilteredActive(false)}
+              onClick={() => setAllFilteredDraft(false)}
               className="text-xs tracking-widest px-3 py-2 rounded-lg border border-gray-200 text-gray-600 bg-gray-50 hover:bg-gray-100 disabled:opacity-50"
             >
               ALLE AUSBLENDEN ({filter === 'all' ? 'alle' : filter})
+            </button>
+            <button
+              type="button"
+              disabled={!hasUnsavedChanges || bulkBusy}
+              onClick={handleSaveVisibility}
+              className={`text-xs tracking-widest px-4 py-2 rounded-lg transition-colors ${
+                hasUnsavedChanges
+                  ? 'bg-gray-900 text-white hover:bg-gray-700'
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              SPEICHERN
+            </button>
+            <button
+              type="button"
+              disabled={!hasUnsavedChanges || bulkBusy}
+              onClick={discardDraft}
+              className={`text-xs tracking-widest px-3 py-2 rounded-lg border transition-colors ${
+                hasUnsavedChanges
+                  ? 'border-gray-300 text-gray-600 hover:bg-gray-100'
+                  : 'border-gray-200 text-gray-300 cursor-not-allowed'
+              }`}
+            >
+              VERWERFEN
             </button>
           </div>
         )}
@@ -148,8 +218,8 @@ export default function MenuItems() {
               <label className="flex items-center cursor-pointer shrink-0">
                 <input
                   type="checkbox"
-                  checked={item.isActive}
-                  onChange={() => handleToggle(item)}
+                  checked={effectiveActive(item)}
+                  onChange={() => toggleDraft(item)}
                   className="w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-gray-400"
                 />
                 <span className="sr-only">Auf der Karte sichtbar</span>
