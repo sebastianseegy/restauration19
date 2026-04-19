@@ -61,6 +61,14 @@ function kategorieRank(typ: MenuTyp, k: string): number {
   return i === -1 ? KATEGORIE_RANK_FALLBACK : i;
 }
 
+/** Sortierung von Menüzeilen innerhalb einer Kategorie (Genuss / Backend). */
+export function compareMenuItemSortInCategory(a: MenuItem, b: MenuItem): number {
+  const ao = a.sortOrder ?? Number.MAX_SAFE_INTEGER;
+  const bo = b.sortOrder ?? Number.MAX_SAFE_INTEGER;
+  if (ao !== bo) return ao - bo;
+  return (a.Titel || '').localeCompare(b.Titel || '', 'de');
+}
+
 /** Feste Reihenfolge der Kategorien für die Sortierung. */
 export function compareMenuKategorie(typ: MenuTyp, a: string, b: string): number {
   const ra = kategorieRank(typ, a);
@@ -103,6 +111,8 @@ export interface MenuItem {
   Preis: string;
   Preis_Flasche?: string;
   isActive: boolean;
+  /** Reihenfolge innerhalb der Kategorie (niedrig = zuerst). Optional bei Alt-Daten. */
+  sortOrder?: number;
   createdAt: string;
   updatedAt: string;
 }
