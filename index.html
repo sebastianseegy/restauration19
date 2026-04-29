@@ -17,7 +17,12 @@
     <script>
       (function () {
         var h = location.hostname;
-        if (h !== 'restauration19.de' && h !== 'www.restauration19.de') return;
+        // Redirect www to apex (permanent equivalent via replace so no back-button loop)
+        if (h === 'www.restauration19.de') {
+          location.replace('https://restauration19.de' + location.pathname + location.search + location.hash);
+          return;
+        }
+        if (h !== 'restauration19.de') return;
         var origin = 'https://restauration19.de';
         var path = location.pathname || '/';
         path = path.replace(/\/+$/, '') || '/';
