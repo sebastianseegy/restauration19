@@ -50,6 +50,13 @@ export default function Genuss() {
 
   return (
     <div className="flex flex-col items-center gap-32">
+      <section className="max-w-4xl mx-auto">
+        <p className="text-sm md:text-xl leading-relaxed">
+          UNSERE KARTE IST KLEIN UND WECHSELT REGELMÄSSIG – JE NACH SAISON UND DEM, WAS DIE REGION HERGIBT.{' '}
+          WIR SETZEN AUF HOCHWERTIGE PRODUKTE UND KOCHEN DAS, WAS WIR SELBST LIEBEN.
+        </p>
+      </section>
+
       <section className="max-w-4xl mx-auto w-full flex flex-col items-center">
         <h2 className="text-2xl md:text-3xl mb-8 text-center">AKTUELLE KARTE</h2>
         
@@ -84,8 +91,24 @@ export default function Genuss() {
         </div>
       </section>
 
+      <ParallaxImageGroup images={[
+        { src: "/photos/genuss/genuss-1.jpg", alt: "Restauration19 Genuss" },
+        { src: "/photos/genuss/genuss-2.jpg", alt: "Restauration19 Genuss" },
+        { src: "/photos/genuss/genuss-3.jpg", alt: "Restauration19 Genuss" }
+      ]} />
+
+      <section className="max-w-4xl mx-auto">
+        <p className="text-sm md:text-xl leading-relaxed">
+          NEBEN UNSERER KLASSISCHEN GETRÄNKEKARTE MIT APERITIF, WEIN, BIER UND ALKOHOLFREIEM GEHT BEI UNS NOCH MEHR.{' '}
+          FÜR ALLE, DIE WEIN NICHT NUR TRINKEN, SONDERN ERLEBEN WOLLEN, HABEN WIR EINE BESONDERE AUSWAHL
+          ZUSAMMENGESTELLT: SELTENE FLASCHEN, AUSSERGEWÖHNLICHE JAHRGÄNGE UND WEINE AUS VERSCHIEDENEN REGIONEN
+          EUROPAS – MIT LIEBE AUSGESUCHT UND MIT FREUDE EINGESCHENKT.{' '}
+          OB NEUGIERIGER ENTDECKER ODER ERFAHRENER WEINLIEBHABER – BEI UNS FINDET SICH IMMER ETWAS BESONDERES.
+        </p>
+      </section>
+
       <section className="max-w-4xl mx-auto w-full flex flex-col items-center">
-        <h2 className="text-2xl md:text-3xl mb-8 text-center">BESONDERE WEINE</h2>
+        <h2 className="text-2xl md:text-3xl mb-8 text-center">BESONDERE WEINAUSWAHL</h2>
         
         {/* Große Darstellung der Weinkarte mit leichtem Schattenrahmen in grün */}
         <div className="w-full max-w-3xl bg-white p-8 md:p-16 shadow-[0_8px_40px_rgb(94,116,97,0.25)] border border-brand-green/10">
@@ -130,12 +153,6 @@ export default function Genuss() {
           )}
         </div>
       </section>
-
-      <ParallaxImageGroup images={[
-        { src: "/photos/genuss/genuss-1.jpg", alt: "Restauration19 Genuss" },
-        { src: "/photos/genuss/genuss-2.jpg", alt: "Restauration19 Genuss" },
-        { src: "/photos/genuss/genuss-3.jpg", alt: "Restauration19 Genuss" }
-      ]} />
     </div>
   );
 }
