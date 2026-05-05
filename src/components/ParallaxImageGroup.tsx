@@ -14,7 +14,7 @@ export function ParallaxImageGroup({ images }: { images: ImageProps[] }) {
     offset: ["start end", "end start"]
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [10, -10] : [50, -50]);
+  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [3, -3] : [15, -15]);
 
   return (
     <div ref={ref} className="flex flex-row flex-wrap justify-center items-start gap-3 md:gap-12 w-full max-w-6xl">

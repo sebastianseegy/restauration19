@@ -95,7 +95,7 @@ export default function Layout() {
             
             <div className="mt-2">
               <p>ÖFFNUNGSZEITEN:</p>
-              <p className="mt-1">MO. – FR.: 17:00 – 22:00 UHR</p>
+              <p className="mt-1">MO.–FR.: 17:00–22:00 UHR</p>
               <p className="mt-1">SA: PRIVATE VERANSTALTUNG NACH VEREINBARUNG</p>
             </div>
           </div>
